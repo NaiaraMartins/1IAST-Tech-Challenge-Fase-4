@@ -1,104 +1,161 @@
-import os
-import chromadb
-from sentence_transformers import SentenceTransformer
+"""Orchestrates the Voice of Customer RAG pipeline.
+
+question
+  -> parse (route, filters, semantic query)          src/query_parser.py
+  -> quantitative route: exact counts                 src/analytics.py
+  -> no shopping-experience term: out of scope        (no retrieval, no LLM)
+  -> qualitative route:
+       retrieve with filters + threshold + MMR        src/retriever.py
+       refuse when fewer than MIN_EVIDENCES survive   (no LLM call)
+       build numbered context                         src/prompts.py
+       generate with the configured LLM               src/llm.py
+       validate citations, refuse on SEM_EVIDENCIA
+"""
+
+import re
+from dataclasses import dataclass, field
+
+from src import llm as llm_config
+from src.prompts import NO_EVIDENCE_TOKEN, SYSTEM_PROMPT, build_user_prompt
+from src.query_parser import ParsedQuery, parse_question
+from src.retriever import RetrievalResult, Retriever
+
+MIN_EVIDENCES = 3
+# Questions with no topic beyond sentiment ("reclamações sobre beleza em 2018")
+# get their relevance from the metadata filters, so the distance threshold is
+# lifted (cosine distance never exceeds 2).
+FILTER_DEFINED_MAX_DISTANCE = 2.0
+CITATION_GROUP_PATTERN = re.compile(r"\[(R\d+(?:\s*[,;]\s*R?\d+)*)\]")
+
+ANSWERED = "answered"
+RETRIEVAL_ONLY = "retrieval_only"
+NO_EVIDENCE = "no_evidence"
+LLM_REFUSED = "llm_refused"
+LLM_ERROR = "llm_error"
+ANALYTICS = "analytics"
+OUT_OF_SCOPE = "out_of_scope"
+
+OUT_OF_SCOPE_MESSAGE = (
+    "Essa pergunta está fora do escopo da base de conhecimento. Eu respondo apenas sobre a"
+    " experiência de compra relatada nas avaliações de clientes da Olist: produtos, entrega,"
+    " atendimento, preço, qualidade e temas parecidos."
+)
+REFUSAL_MESSAGE = (
+    "Não encontrei avaliações suficientes na base para responder a essa pergunta com segurança."
+)
 
 
-class RAGVoiceOfCustomer:
+@dataclass
+class RAGAnswer:
+  question: str
+  parsed: ParsedQuery
+  status: str
+  text: str = ""
+  retrieval: RetrievalResult | None = None
+  cited: list[int] = field(default_factory=list)
+  user_prompt: str = ""
+  llm_label: str = ""
+  error: str = ""
 
-  def __init__(self):
-    raiz_projeto = os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..")
+  @property
+  def evidences(self):
+    return self.retrieval.evidences if self.retrieval else []
+
+  @property
+  def has_uncited_answer(self) -> bool:
+    return self.status == ANSWERED and not self.cited
+
+
+def extract_citations(text: str, evidence_count: int) -> list[int]:
+  """Accepts [R1], [R1][R3] and grouped forms such as [R1, R3] or [R1, 3]."""
+  found = {
+      int(n) for group in CITATION_GROUP_PATTERN.findall(text) for n in re.findall(r"\d+", group)
+  }
+  return sorted(n for n in found if 1 <= n <= evidence_count)
+
+
+def explain_no_evidence(parsed: ParsedQuery, retrieval: RetrievalResult) -> str:
+  reasons = []
+  if not retrieval.candidates:
+    reasons.append("nenhuma avaliação atende aos filtros aplicados")
+  else:
+    best = min(c.distance for c in retrieval.candidates)
+    relevant = sum(c.distance <= retrieval.max_distance for c in retrieval.candidates)
+    reasons.append(
+        f"{relevant} avaliação(ões) ficaram dentro do limiar de relevância"
+        f" (mínimo exigido: {MIN_EVIDENCES}); a mais próxima tem distância {best:.2f}"
+        f" e o limiar é {retrieval.max_distance:.2f}"
     )
-    self.caminho_chroma = os.path.join(raiz_projeto, "data", "chroma_db")
+  filters = parsed.describe_filters()
+  text = REFUSAL_MESSAGE + "\n\nMotivo: " + "; ".join(reasons) + "."
+  if filters:
+    text += f"\n\nFiltros usados: {', '.join(filters)}. Tente uma pergunta mais ampla ou sem algum desses filtros."
+  else:
+    text += "\n\nA pergunta pode estar fora do escopo das avaliações de clientes da Olist."
+  return text
 
-    print("A inicializar o motor de RAG e a carregar modelos locais...")
-    # 1. Carregar o mesmo modelo de embeddings usado na indexação
-    self.modelo_embeddings = SentenceTransformer(
-        "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-    )
 
-    # 2. Conectar ao ChromaDB local
-    self.cliente_chroma = chromadb.PersistentClient(path=self.caminho_chroma)
-    self.colecao = self.cliente_chroma.get_collection(name="olist_reviews_voc")
+class VoCPipeline:
 
-  def recuperar_evidencias(self, pergunta: str, k: int = 5):
-    """Realiza a busca semântica na base vetorial para recuperar as avaliações
+  def __init__(self, embedding_model, collection, categories, generator=None, **retrieval_params):
+    self.retriever = Retriever(embedding_model, collection)
+    self.categories = set(categories)
+    self.generator = generator
+    self.retrieval_params = retrieval_params
 
-    mais relevantes para a pergunta do utilizador.
-    """
-    # Transformar a pergunta do utilizador em vetor
-    vetor_pergunta = self.modelo_embeddings.encode([pergunta]).tolist()
+  @classmethod
+  def with_configured_llm(cls, embedding_model, collection, categories, **retrieval_params):
+    generator = llm_config.LLMGenerator() if llm_config.is_configured() else None
+    return cls(embedding_model, collection, categories, generator, **retrieval_params)
 
-    # Buscar no ChromaDB os k documentos mais próximos semanticamente
-    resultados = self.colecao.query(
-        query_embeddings=vetor_pergunta, n_results=k
-    )
+  def answer(
+      self,
+      question: str,
+      forced_category: str | None = None,
+      extra_filters: dict | None = None,
+      use_llm: bool = True,
+  ) -> RAGAnswer:
+    parsed = parse_question(question, self.categories, forced_category)
+    if extra_filters:
+      parsed.filters.update(extra_filters)
+      parsed.category = parsed.filters.get("category", parsed.category)
+      parsed.year = parsed.filters.get("year", parsed.year)
+      parsed.late_delivery = parsed.filters.get("late_delivery", parsed.late_delivery)
 
-    documentos = resultados["documents"][0]
-    metadados = resultados["metadatas"][0]
+    if parsed.route != "rag":
+      return RAGAnswer(question, parsed, ANALYTICS)
 
-    return documentos, metadados
+    if not parsed.in_domain:
+      return RAGAnswer(question, parsed, OUT_OF_SCOPE, OUT_OF_SCOPE_MESSAGE)
 
-  def construir_prompt_e_contexto(self, pergunta: str, documentos: list):
-    """Constrói o contexto estruturado fundamentado em evidências reais
+    params = dict(self.retrieval_params)
+    if not parsed.topical and parsed.filters:
+      params["max_distance"] = FILTER_DEFINED_MAX_DISTANCE
+    retrieval = self.retriever.retrieve(question, parsed.semantic_query, parsed.filters, **params)
+    if len(retrieval.evidences) < MIN_EVIDENCES:
+      return RAGAnswer(question, parsed, NO_EVIDENCE, explain_no_evidence(parsed, retrieval), retrieval)
 
-    e define as regras para evitar alucinações e respostas sem suporte nos dados.
-    """
-    if not documentos:
-      return (
-          "Não foram encontradas avaliações relevantes na base de dados para"
-          " responder a esta pergunta."
+    user_prompt = build_user_prompt(question, parsed.describe_filters(), retrieval.evidences)
+    if self.generator is None or not use_llm:
+      return RAGAnswer(question, parsed, RETRIEVAL_ONLY, retrieval=retrieval, user_prompt=user_prompt)
+
+    try:
+      text = self.generator.generate(SYSTEM_PROMPT, user_prompt)
+    except Exception as exc:
+      return RAGAnswer(
+          question, parsed, LLM_ERROR, retrieval=retrieval, user_prompt=user_prompt,
+          llm_label=self.generator.label, error=str(exc),
       )
 
-    # Unir os documentos recuperados num bloco de contexto limpo
-    contexto_unificado = "\n\n---\n\n".join(documentos)
+    if NO_EVIDENCE_TOKEN in text:
+      return RAGAnswer(
+          question, parsed, LLM_REFUSED,
+          REFUSAL_MESSAGE + "\n\nO modelo leu as avaliações recuperadas e concluiu que elas não respondem à pergunta.",
+          retrieval, user_prompt=user_prompt, llm_label=self.generator.label,
+      )
 
-    # Prompt estruturado com diretrizes rígidas anti-alucinação (Requisito 4 do edital)
-    prompt = f"""
-        És um assistente especializado em Voice of Customer Intelligence para uma empresa de e-commerce.
-        O teu objetivo é analisar as avaliações reais dos clientes da Olist e responder à pergunta do gestor.
-
-        DIRETRIZES DE SEGURANÇA E RIGOR:
-        1. Baseia a tua resposta EXCLUSIVAMENTE nas evidências fornecidas abaixo.
-        2. Se as evidências recuperadas forem insuficientes ou não contiverem a resposta para a pergunta, deves reconhecer explicitamente as tuas limitações e responder: "Não possuo avaliações suficientes na base de dados para responder a esta pergunta com segurança."
-        3. Nunca inventes informações ou alucines dados que não estejam presentes nos comentários dos clientes.
-        4. Sempre que possível, cita trechos ou dados das avaliações recuperadas para fundamentar os teus insights.
-
-        ---
-        EVIDÊNCIAS REAIS DOS CLIENTES (CONTEXTO):
-        {contexto_unificado}
-        ---
-
-        PERGUNTAS DO GESTOR:
-        {pergunta}
-
-        RESPOSTA FUNDAMENTADA:
-        """
-    return prompt
-
-  def responder(self, pergunta: str):
-    print(f"\n a processar a pergunta: '{pergunta}'")
-
-    # Passo A: Recuperar as avaliações mais relevantes
-    docs, metas = self.recuperar_evidencias(pergunta, k=5)
-
-    # Passo B: Construir o contexto
-    prompt_final = self.construir_prompt_e_contexto(pergunta, docs)
-
-    print("\n--- PROMPT GERADO PARA O LLM ---")
-    print(prompt_final[:800] + "...\n[Conteúdo truncado para visualização]")
-    print("---------------------------------")
-
-    # Nota: Aqui podes enviar o 'prompt_final' para o teu LLM gratuito (via Ollama local ou API)
-    return prompt_final, docs
-
-
-if __name__ == "__main__":
-  rag = RAGVoiceOfCustomer()
-
-  # Teste prático de pergunta baseada nos requisitos do Tech Challenge
-  pergunta_teste = (
-      "Quais são os principais problemas relatados pelos clientes"
-      " relacionados com atrasos na entrega?"
-  )
-  prompt, evidencias = rag.responder(pergunta_teste)
+    return RAGAnswer(
+        question, parsed, ANSWERED, text, retrieval,
+        cited=extract_citations(text, len(retrieval.evidences)),
+        user_prompt=user_prompt, llm_label=self.generator.label,
+    )

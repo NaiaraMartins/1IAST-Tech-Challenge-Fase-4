@@ -1,410 +1,340 @@
 import os
-from collections import Counter
-import chromadb
-import streamlit as st
-import plotly.express as px
+
 import pandas as pd
+import streamlit as st
 from sentence_transformers import SentenceTransformer
 
-from src.prompt_config import detetar_intencao, analisar_pergunta_rag
+from src import rag_pipeline as rp
+from src.analytics import ReviewAnalytics
+from src.config import EMBEDDING_MODEL
+from src.vector_store import get_collection
+from ui import charts
+from ui import components as ui
+from ui.styles import CSS
+from ui.theme import category_name, model_name, month_label, number, percent
 
-st.set_page_config(
-    page_title="Tech Challenge - Fase 4 | FIAP Pos-Tech",
-    layout="wide",
-    initial_sidebar_state="expanded",
-)
+MAX_LLM_CALLS_PER_SESSION = int(os.getenv("MAX_LLM_CALLS_PER_SESSION", "20"))
+EVIDENCE_PAGE_SIZE = 5
+AUTO = "Auto"
+SUGGESTIONS = {
+    "Principais problemas": "Quais são os principais problemas relatados pelos clientes em suas avaliações?",
+    "Problemas de entrega": "O que os clientes relatam sobre problemas relacionados à entrega?",
+    "O que mais elogiam": "Quais aspectos da experiência de compra são mais elogiados pelos clientes?",
+    "Clientes insatisfeitos": "Quais padrões podem ser identificados nas avaliações de clientes insatisfeitos?",
+    "Evidências de atraso": "Quais avaliações sustentam a conclusão de que existem problemas recorrentes relacionados ao prazo de entrega?",
+    "Ranking por categoria": "Quais categorias têm mais reclamações?",
+    "Pergunta fora do escopo": "Qual a capital da França?",
+}
+SENTIMENT_LABELS = {"Reclamações": "negativa", "Elogios": "positiva"}
 
-st.markdown("""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap');
+st.set_page_config(page_title="Voz do Cliente Olist", layout="wide", initial_sidebar_state="collapsed")
+st.markdown(CSS, unsafe_allow_html=True)
 
-    .stApp {
-        background-color: #050406;
-        background-image:
-            radial-gradient(circle, rgba(238, 0, 111, 0.22) 1px, transparent 1.4px),
-            radial-gradient(circle, rgba(255, 255, 255, 0.13) 0.8px, transparent 1.3px),
-            radial-gradient(ellipse at 50% 0%, rgba(100, 0, 52, 0.2), transparent 55%);
-        background-size: 19px 19px, 31px 31px, auto;
-        background-position: 0 0, 8px 12px, center top;
-        color: #eee8ed;
-        font-family: 'Rajdhani', 'Bahnschrift', 'Arial Narrow', sans-serif;
-        min-height: 100vh;
-    }
-    html, body { background-color: #050406 !important; }
-    [data-testid="stAppViewContainer"], [data-testid="stMain"], [data-testid="stBottomBlockContainer"] { background: transparent !important; }
-    [data-testid="stBottomBlockContainer"] > div {
-        background-color: #050406 !important;
-        background-image: radial-gradient(circle, rgba(238, 0, 111, 0.22) 1px, transparent 1.4px), radial-gradient(circle, rgba(255, 255, 255, 0.13) 0.8px, transparent 1.3px);
-        background-size: 19px 19px, 31px 31px;
-        background-position: 0 0, 8px 12px;
-    }
-    [data-testid="stHeader"] { background: transparent; }
-    [data-testid="stSidebar"] { background: rgba(8, 6, 10, 0.96); border-right: 1px solid rgba(255, 0, 117, 0.35); }
-    [data-testid="stChatInput"] { background: rgba(12, 8, 13, 0.96) !important; border: 1px solid rgba(255, 0, 117, 0.42); border-radius: 3px; position: relative; z-index: 99999 !important; display: block !important; }
-    [data-testid="stChatInput"] textarea { background: transparent !important; box-shadow: none !important; color: #f5edf2; font-family: 'Rajdhani', 'Bahnschrift', 'Arial Narrow', sans-serif; }
-    h1, h2, h3 { color: #fff !important; font-family: 'Orbitron', 'Eurostile', 'Bank Gothic', sans-serif; letter-spacing: 0; }
-    .brand-lockup { position: relative; isolation: isolate; max-width: 48rem; margin: 0 auto 1.4rem; padding: 1.7rem 1rem 1.1rem; text-align: center; }
-    .brand-lockup::before, .brand-lockup::after { position: absolute; top: 0; left: 50%; z-index: -1; content: ''; transform: translateX(-50%); clip-path: polygon(20% 0, 80% 0, 100% 50%, 80% 100%, 20% 100%, 0 50%); border: 1px solid rgba(255, 0, 117, 0.34); pointer-events: none; }
-    .brand-lockup::before { width: min(76vw, 34rem); height: 12.5rem; }
-    .brand-lockup::after { top: 1.4rem; width: min(48vw, 20rem); height: 9.5rem; border-color: rgba(255, 0, 117, 0.22); }
-    .brand-mark { color: #f00075; font-family: 'Orbitron', 'Eurostile', 'Bank Gothic', sans-serif; font-size: 5rem; font-weight: 500; line-height: 1; text-shadow: 0 0 22px rgba(240, 0, 117, 0.35); }
-    .brand-kicker { margin: 0.7rem 0 0.2rem; color: #f5edf2; font-family: 'Orbitron', 'Eurostile', 'Bank Gothic', sans-serif; font-size: 0.85rem; }
-    .brand-subtitle { margin: 0; color: #c7bac3; font-size: 1.2rem; font-weight: 500; }
-    .stChatMessage { background: rgba(14, 10, 15, 0.92) !important; border: 1px solid rgba(255, 0, 117, 0.25); border-radius: 3px; color: #f1eaf0; }
-    .stButton > button { background: #ed006f !important; color: #fff !important; border: 1px solid #ff3b98 !important; border-radius: 2px; font-family: 'Orbitron', 'Eurostile', 'Bank Gothic', sans-serif; font-size: 0.75rem; font-weight: 600; }
-    .stButton > button:hover { background: #ff1687 !important; border-color: #ff75b7 !important; }
-    .btn-voltar > button { background: transparent !important; border: 1px solid #ff0055 !important; color: #ff0055 !important; }
-    .btn-voltar > button:hover { background: rgba(255, 0, 85, 0.1) !important; }
-    .streamlit-expanderHeader { background: rgba(13, 9, 14, 0.94) !important; color: #ff4b9c !important; border: 1px solid rgba(255, 0, 117, 0.32); border-radius: 2px; }
-    [data-testid="stSidebar"] h3 { font-size: 0.95rem !important; }
-    [data-testid="stSidebar"] [data-testid="stMetricValue"] { font-size: 1rem !important; }
-    [data-testid="stSidebar"] [data-testid="stMetricLabel"], [data-testid="stSidebar"] [data-testid="stMetricDelta"] { font-size: 0.7rem !important; }
-    [data-testid="stSidebar"] [data-testid="stSelectbox"] label { font-size: 0.75rem !important; }
-    [data-testid="stSidebar"] [data-testid="stMetric"] { border-left: 2px solid rgba(240, 0, 117, 0.65); padding: 0.25rem 0.6rem; background: rgba(18, 11, 18, 0.7); }
-    </style>
-""", unsafe_allow_html=True)
 
-@st.cache_resource
-def carregar_motor_rag():
-    raiz_projeto = os.path.dirname(__file__)
-    caminho_chroma = os.path.join(raiz_projeto, "data", "chroma_db")
-    modelo = SentenceTransformer("sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
-    cliente = chromadb.PersistentClient(path=caminho_chroma)
-    colecao = cliente.get_collection(name="olist_reviews_voc")
-    return modelo, colecao
+@st.cache_resource(show_spinner="Carregando o modelo de embeddings e a base vetorial...")
+def load_engine():
+  analytics = ReviewAnalytics()
+  pipeline = rp.VoCPipeline.with_configured_llm(
+      SentenceTransformer(EMBEDDING_MODEL), get_collection(), analytics.categories
+  )
+  return analytics, pipeline
 
-with st.spinner("A carregar base vetorial e motor RAG..."):
-    modelo_embeddings, colecao = carregar_motor_rag()
 
-st.markdown("""
-    <div class="brand-lockup">
-        <div class="brand-mark">FIAP</div>
-        <p class="brand-kicker">POS TECH · FASE 4</p>
-        <p class="brand-subtitle">Voice of Customer Intelligence · Olist</p>
-    </div>
-""", unsafe_allow_html=True)
+analytics, pipeline = load_engine()
+llm_enabled = pipeline.generator is not None
+categories = [c for c in analytics.categories if c != "desconhecido"]
 
-if "mensagens" not in st.session_state: st.session_state.mensagens = []
-if "pergunta_pendente" not in st.session_state: st.session_state.pergunta_pendente = None
-if "cat_selecionada" not in st.session_state: st.session_state.cat_selecionada = None
+for key, value in {"messages": [], "pending": None, "llm_calls": 0}.items():
+  st.session_state.setdefault(key, value)
 
-@st.cache_data
-def obter_ranking_global_absoluto():
-    resultados_globais = colecao.get(include=["metadatas"])
-    metadatas_todas = resultados_globais["metadatas"]
-    negativas, positivas, todas = [], [], []
-    for meta in metadatas_todas:
-        try: score = int(float(meta.get("review_score", 3)))
-        except: score = 3
-        cat = meta.get("product_category_name", "desconhecido")
-        todas.append(cat)
-        if score <= 2: negativas.append(cat)
-        elif score >= 4: positivas.append(cat)
-    return Counter(negativas), Counter(positivas), Counter(todas)
 
-ranking_negativo_global, ranking_positivo_global, ranking_geral_global = obter_ranking_global_absoluto()
+def reset_conversation():
+  st.session_state.messages = []
+  st.session_state.pending = None
+  for key in ("bar_negativa", "bar_positiva"):
+    st.session_state.pop(key, None)
 
+
+def queue_question(question: str, category: str | None = None):
+  st.session_state.pending = {"question": question, "category": category}
+
+
+def on_suggestion():
+  label = st.session_state.get("suggestion")
+  if label:
+    queue_question(SUGGESTIONS[label])
+  st.session_state.suggestion = None
+
+
+# --- Barra lateral: filtros da busca ---
 with st.sidebar:
-    st.markdown("<h2 style='color: #ff0055; margin-bottom: 0;'>POS TECH</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='color: #888; font-size: 0.85rem;'>FIAP - IA & Machine Learning</p>", unsafe_allow_html=True)
-    st.markdown("---")
-    
-    st.markdown("### KPIs por Categoria")
-    categorias_kpi = ["Todas as categorias", *sorted(ranking_geral_global)]
-    categoria_kpi = st.selectbox("Selecione para inspecionar:", categorias_kpi, key="categoria_kpi", format_func=lambda c: c if c == "Todas as categorias" else c.replace("_", " ").title())
-    
-    if categoria_kpi == "Todas as categorias":
-        total_categoria = sum(ranking_geral_global.values())
-        positivas_categoria = sum(ranking_positivo_global.values())
-        negativas_categoria = sum(ranking_negativo_global.values())
-    else:
-        total_categoria = ranking_geral_global.get(categoria_kpi, 0)
-        positivas_categoria = ranking_positivo_global.get(categoria_kpi, 0)
-        negativas_categoria = ranking_negativo_global.get(categoria_kpi, 0)
+  st.markdown("### Filtros da busca")
+  st.caption("Somam-se aos filtros que o sistema detecta na própria pergunta.")
+  score_filter = st.segmented_control("Nota", [AUTO, "1–2", "3", "4–5"], default=AUTO, key="f_score", width="stretch")
+  category_filter = st.selectbox("Categoria", [AUTO, *categories], key="f_category",
+                                 format_func=lambda c: "Detectar pela pergunta" if c == AUTO else category_name(c))
+  year_filter = st.selectbox("Ano da compra", ["Todos", "2016", "2017", "2018"], key="f_year",
+                             format_func=lambda y: "Todos os anos" if y == "Todos" else y)
+  late_filter = st.toggle("Só pedidos atrasados ou não entregues", key="f_late")
+  st.divider()
+  if llm_enabled:
+    remaining = max(MAX_LLM_CALLS_PER_SESSION - st.session_state.llm_calls, 0)
+    st.caption(f"Modelo: {model_name(pipeline.generator.label)}. Respostas geradas restantes nesta sessão: {remaining}.")
+  else:
+    st.caption("Sem chave de LLM configurada: o app mostra as avaliações recuperadas, sem a resposta gerada.")
+  if st.button("Limpar conversa", width="stretch"):
+    reset_conversation()
+    st.rerun()
 
-    st.metric("Avaliações Analisadas", total_categoria)
-    st.metric("Elogios (notas 4-5)", positivas_categoria)
-    st.metric("Reclamações (notas 1-2)", negativas_categoria)
 
-    st.markdown("---")
-    if st.button("🗑️ Limpar Todo o Histórico"):
-        st.session_state.mensagens = []
-        st.session_state.pergunta_pendente = None
-        st.session_state.cat_selecionada = None
+def sidebar_filters() -> dict:
+  filters = {}
+  if score_filter == "1–2":
+    filters["score_max"] = 2
+  elif score_filter == "3":
+    filters.update(score_min=3, score_max=3)
+  elif score_filter == "4–5":
+    filters["score_min"] = 4
+  if category_filter != AUTO:
+    filters["category"] = category_filter
+  if year_filter and year_filter != "Todos":
+    filters["year"] = int(year_filter)
+  if late_filter:
+    filters["late_delivery"] = True
+  return filters
+
+
+# --- Resposta do assistente ---
+def render_evidences(answer: rp.RAGAnswer, index: int):
+  evidences = answer.evidences
+  if not evidences:
+    return
+  order = [n for n in range(1, len(evidences) + 1) if n in answer.cited]
+  order += [n for n in range(1, len(evidences) + 1) if n not in answer.cited]
+  limit_key = f"evidence_limit_{index}"
+  limit = st.session_state.get(limit_key, EVIDENCE_PAGE_SIZE)
+  label = f"Avaliações usadas como evidência ({len(evidences)})"
+  with st.expander(label, expanded=answer.status == rp.RETRIEVAL_ONLY):
+    st.markdown("".join(ui.evidence(n, evidences[n - 1], n in answer.cited) for n in order[:limit]),
+                unsafe_allow_html=True)
+    if limit < len(order):
+      if st.button(f"Mostrar mais {min(EVIDENCE_PAGE_SIZE, len(order) - limit)}", key=f"more_{index}"):
+        st.session_state[limit_key] = limit + EVIDENCE_PAGE_SIZE
         st.rerun()
 
-# --- 1. TELA INICIAL (DASHBOARD ZERO-STATE COM BARRAS CLICÁVEIS) ---
-mostrar_dashboard = len(st.session_state.mensagens) == 0 and not st.session_state.cat_selecionada
 
-if mostrar_dashboard:
-    st.markdown("<h3 style='text-align: center; color: #fff;'>🎛️ Painel de Descoberta Rápida</h3>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; color: #c7bac3;'><b>Clique nas barras dos gráficos abaixo</b> para iniciar imediatamente a análise no chat.</p>", unsafe_allow_html=True)
-    st.write("")
-    
-    col_neg, col_pos = st.columns(2)
-    
-    with col_neg:
-        st.markdown("<h4 style='color: #ff0055; text-align: center;'>⚠️ Top 5 Reclamações</h4>", unsafe_allow_html=True)
-        top5_neg = ranking_negativo_global.most_common(5)
-        
-        # Preparar dados para o Gráfico de Barras
-        df_neg = pd.DataFrame(top5_neg, columns=["Categoria", "Reclamações"])
-        df_neg["Categoria Formatar"] = df_neg["Categoria"].str.replace("_", " ").str.title()
-        df_neg = df_neg.sort_values(by="Reclamações", ascending=True) # Ordem crescente para a maior ficar no topo
-        
-        # Gráfico Horizontal
-        fig_neg = px.bar(df_neg, x="Reclamações", y="Categoria Formatar", orientation='h', color_discrete_sequence=["#ff0055"])
-        fig_neg.update_traces(texttemplate='<b>%{x}</b>', textposition='outside')
-        fig_neg.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font_color="#e0e0e0", margin=dict(t=10, b=10, l=0, r=0), xaxis=dict(visible=False), yaxis=dict(title=""))
-        
-        # O SEGREDO: Barras suportam cliques 100% nativamente!
-        event_neg = st.plotly_chart(fig_neg, use_container_width=True, on_select="rerun", selection_mode="points", key="bar_neg")
-        
-        if event_neg and event_neg.get("selection") and event_neg["selection"].get("points"):
-            clicked_label = event_neg["selection"]["points"][0]["y"]
-            cat_original = next((c[0] for c in top5_neg if c[0].replace("_", " ").title() == clicked_label), None)
-            if cat_original:
-                st.session_state.cat_selecionada = cat_original
-                st.session_state.pergunta_pendente = f"quais são as reclamações e problemas da categoria {cat_original}"
-                st.rerun()
+def render_trace(answer: rp.RAGAnswer):
+  with st.expander("Como a resposta foi construída"):
+    st.markdown(ui.steps(answer.parsed, answer.retrieval, answer.llm_label), unsafe_allow_html=True)
+    retrieval = answer.retrieval
+    if retrieval and retrieval.candidates:
+      selected = {e.review_id for e in retrieval.evidences}
 
-    with col_pos:
-        st.markdown("<h4 style='color: #00e699; text-align: center;'>⭐ Top 5 Elogios</h4>", unsafe_allow_html=True)
-        top5_pos = ranking_positivo_global.most_common(5)
-        
-        # Preparar dados para o Gráfico de Barras
-        df_pos = pd.DataFrame(top5_pos, columns=["Categoria", "Elogios"])
-        df_pos["Categoria Formatar"] = df_pos["Categoria"].str.replace("_", " ").str.title()
-        df_pos = df_pos.sort_values(by="Elogios", ascending=True)
-        
-        # Gráfico Horizontal
-        fig_pos = px.bar(df_pos, x="Elogios", y="Categoria Formatar", orientation='h', color_discrete_sequence=["#00e699"])
-        fig_pos.update_traces(texttemplate='<b>%{x}</b>', textposition='outside')
-        fig_pos.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font_color="#e0e0e0", margin=dict(t=10, b=10, l=0, r=0), xaxis=dict(visible=False), yaxis=dict(title=""))
-        
-        event_pos = st.plotly_chart(fig_pos, use_container_width=True, on_select="rerun", selection_mode="points", key="bar_pos")
-        
-        if event_pos and event_pos.get("selection") and event_pos["selection"].get("points"):
-            clicked_label = event_pos["selection"]["points"][0]["y"]
-            cat_original = next((c[0] for c in top5_pos if c[0].replace("_", " ").title() == clicked_label), None)
-            if cat_original:
-                st.session_state.cat_selecionada = cat_original
-                st.session_state.pergunta_pendente = f"quais são os elogios e pontos positivos da categoria {cat_original}"
-                st.rerun()
+      def situation(c):
+        if c.review_id in selected:
+          return "No contexto"
+        if c.distance > retrieval.max_distance:
+          return "Pouco relevante"
+        if c.review_id in retrieval.duplicate_ids:
+          return "Texto repetido"
+        return "Redundante (MMR)"
 
+      table = pd.DataFrame([
+          {"Similaridade": 1 - c.distance, "Situação": situation(c), "Nota": c.metadata.get("review_score"),
+           "Avaliação": c.text}
+          for c in retrieval.candidates
+      ])
+      st.dataframe(
+          table, hide_index=True, width="stretch", height=280,
+          column_config={
+              "Similaridade": st.column_config.ProgressColumn(format="%.2f", min_value=0, max_value=1, width="small"),
+              "Situação": st.column_config.TextColumn(width="small"),
+              "Nota": st.column_config.NumberColumn(width="small"),
+          },
+      )
+    if answer.user_prompt:
+      st.caption("Contexto enviado ao modelo")
+      st.code(answer.user_prompt, language=None, wrap_lines=True, height=260)
+
+
+def render_ranking(answer: rp.RAGAnswer):
+  parsed = answer.parsed
+  sentiment = parsed.sentiment if parsed.sentiment in ("negativa", "positiva") else "negativa"
+  noun = "reclamações" if sentiment == "negativa" else "elogios"
+  table = analytics.ranking(sentiment)
+  st.markdown(ui.section(f"Categorias com mais {noun}",
+                         f"Contagem exata sobre {number(analytics.counts().total)} avaliações com texto, "
+                         "feita com pandas e não pelo modelo."), unsafe_allow_html=True)
+  if parsed.wants_chart and "pizza" in parsed.normalized:
+    st.plotly_chart(charts.share_donut(table, sentiment), config=charts.PLOTLY_CONFIG, width="stretch")
+  else:
+    st.plotly_chart(charts.category_bars(table, sentiment, top=10), config=charts.PLOTLY_CONFIG, width="stretch")
+  view = table.head(15).copy()
+  view["Categoria"] = view["category"].map(category_name)
+  st.dataframe(
+      view[["Categoria", "reviews", "share_of_sentiment", "rate_in_category", "category_total"]],
+      hide_index=True, width="stretch",
+      column_config={
+          "reviews": st.column_config.NumberColumn(noun.capitalize(), format="localized"),
+          "share_of_sentiment": st.column_config.NumberColumn(f"% do total de {noun}", format="percent"),
+          "rate_in_category": st.column_config.ProgressColumn(
+              "Taxa na categoria", format="percent", min_value=0, max_value=float(view["rate_in_category"].max())),
+          "category_total": st.column_config.NumberColumn("Avaliações da categoria", format="localized"),
+      },
+  )
+  st.caption("A taxa na categoria compara categorias de tamanhos diferentes: volume alto nem sempre é taxa alta.")
+
+
+def render_comparison(answer: rp.RAGAnswer):
+  category = answer.parsed.category
+  c, base = analytics.counts(category), analytics.counts()
+  st.markdown(ui.section(f"Reclamações e elogios em {category_name(category).lower()}",
+                         f"{number(c.total)} avaliações com texto na categoria. Contagem exata, sem o modelo."),
+              unsafe_allow_html=True)
+  st.markdown(ui.stat_cards([
+      ("Reclamações (1–2)", number(c.negative), f"{percent(c.negative / c.total)} da categoria", "neg"),
+      ("Neutras (3)", number(c.neutral), f"{percent(c.neutral / c.total)} da categoria", ""),
+      ("Elogios (4–5)", number(c.positive), f"{percent(c.positive / c.total)} da categoria", "pos"),
+  ]), unsafe_allow_html=True)
+  st.plotly_chart(charts.composition([
+      (category_name(category), c.negative, c.neutral, c.positive),
+      ("Base inteira", base.negative, base.neutral, base.positive),
+  ]), config=charts.PLOTLY_CONFIG, width="stretch")
+  more = "mais elogios do que reclamações" if c.positive > c.negative else "mais reclamações do que elogios"
+  st.markdown(f"A categoria tem **{more}**. A taxa de reclamação é **{percent(c.negative / c.total)}**, "
+              f"contra **{percent(base.negative / base.total)}** na base inteira.")
+
+
+REFUSAL_TITLES = {
+    rp.OUT_OF_SCOPE: "Fora do escopo",
+    rp.NO_EVIDENCE: "Sem evidência suficiente",
+    rp.LLM_REFUSED: "As avaliações não sustentam uma resposta",
+}
+
+
+def render_answer(answer: rp.RAGAnswer, index: int):
+  status = answer.status
+  if status == rp.ANALYTICS:
+    if answer.parsed.route == "comparison":
+      render_comparison(answer)
+    else:
+      render_ranking(answer)
+    return
+
+  filters = answer.parsed.describe_filters()
+  if status == rp.ANSWERED:
+    st.markdown(ui.chips([model_name(answer.llm_label), f"{len(answer.evidences)} avaliações no contexto",
+                          f"{len(answer.cited)} citadas", *filters], accent_first=True), unsafe_allow_html=True)
+    st.markdown(ui.answer(answer.text), unsafe_allow_html=True)
+    st.markdown(ui.citation_note(len(answer.cited), len(answer.evidences)), unsafe_allow_html=True)
+    if answer.has_uncited_answer:
+      st.markdown(ui.callout("Resposta sem citações",
+                             "O modelo não citou nenhuma avaliação. Confira as evidências antes de usar.", "error"),
+                  unsafe_allow_html=True)
+  elif status in REFUSAL_TITLES:
+    st.markdown(ui.callout(REFUSAL_TITLES[status], answer.text), unsafe_allow_html=True)
+  elif status == rp.RETRIEVAL_ONLY:
+    reason = ("o limite de respostas geradas desta sessão foi atingido" if llm_enabled
+              else "não há chave de LLM configurada")
+    st.markdown(ui.callout("Modo só busca", f"Sem resposta gerada porque {reason}. Abaixo estão as avaliações "
+                                            "que seriam enviadas ao modelo.", "info"), unsafe_allow_html=True)
+  elif status == rp.LLM_ERROR:
+    st.markdown(ui.callout("O modelo de linguagem não respondeu", answer.error[:300], "error"),
+                unsafe_allow_html=True)
+
+  render_evidences(answer, index)
+  render_trace(answer)
+
+
+def run_question(question: str, category: str | None) -> rp.RAGAnswer:
+  use_llm = llm_enabled and st.session_state.llm_calls < MAX_LLM_CALLS_PER_SESSION
+  with st.spinner("Buscando avaliações e escrevendo a resposta..."):
+    answer = pipeline.answer(question, category, sidebar_filters(), use_llm=use_llm)
+  if answer.status in (rp.ANSWERED, rp.LLM_REFUSED, rp.LLM_ERROR):
+    st.session_state.llm_calls += 1
+  return answer
+
+
+# --- Página inicial ---
+def render_home():
+  counts = analytics.counts()
+  st.markdown(ui.kpi_grid([
+      ("Avaliações com texto", number(counts.total), "Pedidos de set/2016 a ago/2018", ""),
+      ("Taxa de reclamação", percent(counts.negative / counts.total), "Avaliações com nota 1 ou 2", "neg"),
+      ("Taxa de elogio", percent(counts.positive / counts.total), "Avaliações com nota 4 ou 5", "pos"),
+      ("Reclamações ligadas à entrega", percent(analytics.late_delivery_share("negativa")),
+       f"Pedido atrasado ou não entregue. Entre os elogios: {percent(analytics.late_delivery_share('positiva'))}", ""),
+  ]), unsafe_allow_html=True)
+
+  head, toggle = st.columns([3, 1], vertical_alignment="bottom")
+  head.markdown(ui.section("Onde os clientes reclamam e o que elogiam",
+                           "Números exatos sobre a base inteira. Clique numa categoria para investigar os motivos."),
+                unsafe_allow_html=True)
+  choice = toggle.segmented_control("Visão", list(SENTIMENT_LABELS), default="Reclamações", key="home_sentiment",
+                                    label_visibility="collapsed", width="stretch")
+  sentiment = SENTIMENT_LABELS.get(choice or "Reclamações")
+  noun = "reclamações" if sentiment == "negativa" else "elogios"
+
+  left, right = st.columns([1.1, 1], gap="large")
+  with left:
+    ranking = analytics.ranking(sentiment)
+    st.markdown(ui.chart_title(f"Categorias com mais {noun}", "Volume · taxa dentro da categoria"),
+                unsafe_allow_html=True)
+    event = st.plotly_chart(charts.category_bars(ranking, sentiment), config=charts.PLOTLY_CONFIG, width="stretch",
+                            on_select="rerun", selection_mode="points", key=f"bar_{sentiment}")
+    points = (event or {}).get("selection", {}).get("points", [])
+    if points:
+      names = {category_name(c): c for c in ranking["category"].head(8)}
+      category = names.get(points[0].get("y"))
+      if category:
+        template = ("Quais são as principais reclamações sobre {}?" if sentiment == "negativa"
+                    else "O que os clientes mais elogiam em {}?")
+        queue_question(template.format(category_name(category).lower()), category)
+        st.rerun()
+  with right:
+    monthly = analytics.monthly_rates()
+    column = "negative_rate" if sentiment == "negativa" else "positive_rate"
+    peak = monthly.loc[monthly[column].idxmax() if sentiment == "negativa" else monthly[column].idxmin()]
+    peak_note = (f"Pico em {month_label(peak['purchase_month'])}: {percent(peak[column], 0)}" if sentiment == "negativa"
+                 else f"Menor taxa em {month_label(peak['purchase_month'])}: {percent(peak[column], 0)}")
+    st.markdown(ui.chart_title(f"Taxa de {noun} por mês da compra", f"Meses com 300+ avaliações · {peak_note}"),
+                unsafe_allow_html=True)
+    st.plotly_chart(charts.monthly_rate(monthly, sentiment), config=charts.PLOTLY_CONFIG, width="stretch")
+
+  st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+  st.markdown(ui.section("Comece por uma pergunta",
+                         "Ou escreva a sua no campo abaixo. Filtros avançados ficam na barra lateral."),
+              unsafe_allow_html=True)
+  st.pills("Sugestões", list(SUGGESTIONS), key="suggestion", on_change=on_suggestion, label_visibility="collapsed")
+
+
+# --- Layout principal ---
+st.markdown(ui.header(pipeline.generator.label if llm_enabled else None, analytics.counts().total),
+            unsafe_allow_html=True)
+
+if not st.session_state.messages and not st.session_state.pending:
+  render_home()
 else:
-    # --- 2. MODO CHAT (Botão Voltar e Histórico) ---
-    col_btn, _ = st.columns([2, 8])
-    with col_btn:
-        st.markdown('<div class="btn-voltar">', unsafe_allow_html=True)
-        if st.button("⬅️ Voltar ao Dashboard", use_container_width=True):
-            st.session_state.mensagens = []
-            st.session_state.pergunta_pendente = None
-            st.session_state.cat_selecionada = None
-            st.rerun()
-        st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown("---")
-    
-    for idx, mensagem in enumerate(st.session_state.mensagens):
-        with st.chat_message(mensagem["role"]):
-            st.markdown(mensagem["conteudo_texto"], unsafe_allow_html=True)
-            if mensagem.get("figura_grafico"):
-                st.plotly_chart(mensagem["figura_grafico"], use_container_width=True)
-                
-            if "evidencias" in mensagem and mensagem["evidencias"]:
-                limite_atual = mensagem.get("limite_atual", 5)
-                evidencias_visiveis = mensagem["evidencias"][:limite_atual]
-                with st.expander(f"🔍 Ver Evidências Reais Auditáveis (Exibindo {len(evidencias_visiveis)} de {len(mensagem['evidencias'])})"):
-                    for doc, meta in evidencias_visiveis:
-                        st.markdown(f"**Categoria:** `{meta.get('product_category_name')}` | **Nota:** `{meta.get('review_score')}/5` | **Data:** `{meta.get('order_purchase_timestamp')}`")
-                        st.text(doc)
-                        st.divider()
-                    if len(evidencias_visiveis) < len(mensagem["evidencias"]):
-                        if st.button("Carregar mais 5 evidências", key=f"btn_carregar_hist_{idx}"):
-                            mensagem["limite_atual"] += 5
-                            st.rerun()
+  bar_left, bar_right = st.columns([4, 1], vertical_alignment="center")
+  bar_left.caption("Conversa")
+  if bar_right.button("Nova conversa", width="stretch"):
+    reset_conversation()
+    st.rerun()
+  for index, message in enumerate(st.session_state.messages):
+    if message["role"] == "user":
+      st.markdown(ui.user_turn(message["content"]), unsafe_allow_html=True)
+    else:
+      render_answer(message["answer"], index)
 
-            if mensagem.get("exigir_ranking_flag") and mensagem.get("resto_ranking"):
-                modo_porcentagem = mensagem.get("modo_porcentagem", False)
-                total_ctx = mensagem.get("total_contexto", 1)
-                with st.expander("📈 Ver restante do Ranking Completo de Categorias"):
-                    for pos, (cat, freq) in enumerate(mensagem["resto_ranking"], 6):
-                        if modo_porcentagem: st.markdown(f"{pos}. `{cat}` — **{(freq / total_ctx) * 100 if total_ctx > 0 else 0:.1f}%** ({freq} ocorrência(s))")
-                        else: st.markdown(f"{pos}. `{cat}` — **{freq} ocorrência(s)**")
+if st.session_state.pending:
+  pending = st.session_state.pending
+  st.session_state.pending = None
+  st.session_state.messages.append({"role": "user", "content": pending["question"]})
+  st.markdown(ui.user_turn(pending["question"]), unsafe_allow_html=True)
+  answer = run_question(pending["question"], pending["category"])
+  st.session_state.messages.append({"role": "assistant", "answer": answer})
+  render_answer(answer, len(st.session_state.messages) - 1)
 
-def processar_resposta(pergunta_utilizador, categoria_forcada=None):
-    with st.chat_message("assistant"):
-        with st.spinner("A consultar Base Vetorial e Analisar Voz do Cliente..."):
-            
-            dados_nlp = analisar_pergunta_rag(
-                pergunta_utilizador, 
-                categorias_validas=ranking_geral_global.keys(), 
-                categoria_forcada=categoria_forcada
-            )
-            
-            intencao = detetar_intencao(dados_nlp["pergunta_segura"])
-            vetor_pergunta = modelo_embeddings.encode([dados_nlp["pergunta_segura"]]).tolist()
-            categoria_alvo = dados_nlp["categoria_alvo"]
-
-            if intencao == "negativa":
-                ranking_ativo = ranking_negativo_global
-                total_contexto = sum(ranking_negativo_global.values())
-            elif intencao == "positiva" or "elogiados" in dados_nlp["pergunta_lower"]:
-                ranking_ativo = ranking_positivo_global
-                total_contexto = sum(ranking_positivo_global.values())
-            else:
-                ranking_ativo = ranking_geral_global
-                total_contexto = sum(ranking_geral_global.values())
-
-            figura_plotly = None
-            deve_mostrar_ranking = False
-            mostrar_botoes_categorias = False
-            resto_ranking = []
-            top_5 = []
-
-            if dados_nlp["pede_comparacao"]:
-                if categoria_alvo:
-                    neg_cat = ranking_negativo_global.get(categoria_alvo, 0)
-                    pos_cat = ranking_positivo_global.get(categoria_alvo, 0)
-                    resposta_texto = f"### 📊 Análise Comparativa para a Categoria: `{categoria_alvo}`\n\n- **Reclamações (Notas 1 e 2):** `{neg_cat}` ocorrência(s)\n- **Elogios (Notas 4 e 5):** `{pos_cat}` ocorrência(s)\n\n"
-                    if neg_cat > pos_cat: resposta_texto += f"👉 Nesta categoria, existem **mais pessoas a reclamar** do que a elogiar."
-                    elif pos_cat > neg_cat: resposta_texto += f"👉 Nesta categoria, existem **mais pessoas a elogiar** do que a reclamar."
-                    else: resposta_texto += f"👉 Há um equilíbrio exato entre reclamações e elogios nesta categoria."
-                else:
-                    neg_total = sum(ranking_negativo_global.values())
-                    pos_total = sum(ranking_positivo_global.values())
-                    resposta_texto = f"### 📊 Análise Comparativa Global da Olist\n\n- **Reclamações Totais:** `{neg_total}` ocorrência(s)\n- **Elogios Totais:** `{pos_total}` ocorrência(s)\n\n"
-                    if neg_total > pos_total: resposta_texto += f"👉 No panorama geral da plataforma, existem **mais reclamações** do que elogios."
-                    else: resposta_texto += f"👉 No panorama geral da plataforma, existem **mais elogios** do que reclamações."
-                        
-            elif dados_nlp["pede_problemas"] and not categoria_alvo:
-                st.session_state.pergunta_pendente = dados_nlp["pergunta_segura"]
-                resposta_texto = "### ⚠️ Análise Geral dos Principais Problemas:\n\nNum panorama macro da operação, os clientes demonstram insatisfação principalmente por 3 motivos centrais:\n1. **Logística:** Atrasos nas entregas e falhas nas transportadoras.\n2. **Qualidade:** Produtos que chegam com defeito ou não correspondem ao anúncio.\n3. **Pós-Venda:** Dificuldade no contacto e estorno com os parceiros."
-            
-            else:
-                deve_mostrar_ranking = bool(dados_nlp["pede_ranking"] or dados_nlp["pediu_grafico"] or dados_nlp["pergunta_porcentagem"]) and not categoria_alvo
-                top_5 = ranking_ativo.most_common(5)
-                resto_ranking = ranking_ativo.most_common()[5:]
-
-                if categoria_alvo:
-                    if intencao == "positiva" or "elogi" in dados_nlp["pergunta_lower"] or "positiv" in dados_nlp["pergunta_lower"]:
-                        resposta_texto = f"### 🔍 Análise de Elogios da Categoria: `{categoria_alvo}`\n\nCom base na auditoria das avaliações reais, os clientes desta categoria destacam a excelente qualidade, o ótimo custo-benefício e a rapidez na entrega. Consulte as evidências de satisfação abaixo."
-                    elif intencao == "negativa" or "reclam" in dados_nlp["pergunta_lower"] or "negativ" in dados_nlp["pergunta_lower"] or "problema" in dados_nlp["pergunta_lower"]:
-                        resposta_texto = f"### 🔍 Análise de Problemas da Categoria: `{categoria_alvo}`\n\nCom base na auditoria das avaliações de insatisfação (notas 1 e 2), os clientes reportam falhas logísticas, atrasos e avarias no produto. Consulte os relatos na íntegra abaixo."
-                    else:
-                        neg_cat = ranking_negativo_global.get(categoria_alvo, 0)
-                        pos_cat = ranking_positivo_global.get(categoria_alvo, 0)
-                        resposta_texto = f"### 🔍 Resumo Geral da Categoria: `{categoria_alvo}`\n\nEsta categoria apresenta um cenário misto de interações:\n- **Lado Positivo ({pos_cat} elogios):** Os consumidores elogiam a utilidade e a entrega dos produtos corretos.\n- **Lado Negativo ({neg_cat} reclamações):** As principais queixas envolvem logística demorada ou itens trocados.\n\nConsulte as evidências auditáveis abaixo."
-                elif deve_mostrar_ranking:
-                    ranking_texto = "### 🏆 Ranking de Categorias:\n"
-                    for pos, (cat, freq) in enumerate(top_5, 1):
-                        ranking_texto += f"{pos}. `{cat}` — **{freq} ocorrência(s)**\n"
-
-                    if dados_nlp["pergunta_porcentagem"] or dados_nlp["pediu_grafico"]:
-                        resposta_porcentagem = "### 📊 Porcentagem por Categoria:\n\n"
-                        dados_grafico = []
-                        soma_top_5 = 0
-                        for cat, freq in top_5:
-                            porcentagem = (freq / total_contexto) * 100 if total_contexto > 0 else 0
-                            resposta_porcentagem += f"- **{cat}**: `{porcentagem:.1f}%` ({freq} ocorrência(s))\n"
-                            dados_grafico.append({"Categoria": cat, "Ocorrências": freq})
-                            soma_top_5 += freq
-                        
-                        outros = total_contexto - soma_top_5
-                        if outros > 0: dados_grafico.append({"Categoria": "Outras Categorias", "Ocorrências": outros})
-                        
-                        resposta_texto = resposta_porcentagem
-
-                        if dados_nlp["pediu_grafico"]:
-                            import pandas as pd
-                            df_pizza = pd.DataFrame(dados_grafico)
-                            figura_plotly = px.pie(df_pizza, names="Categoria", values="Ocorrências", title="Distribuição Percentual Absoluta (Base Global)", color_discrete_sequence=px.colors.sequential.RdBu)
-                            figura_plotly.update_layout(paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)", font_color="#e0e0e0")
-                    elif intencao == "positiva" or "elogiados" in dados_nlp["pergunta_lower"]:
-                        resposta_texto = "**Análise de Elogios e Satisfação:**\nAbaixo encontram-se as 5 categorias com maior volume absoluto de avaliações positivas:\n\n" + ranking_texto
-                    else:
-                        resposta_texto = "**Panorama Geral das Categorias com Mais Problemas:**\nAbaixo encontram-se as 5 categorias com maior volume absoluto de reclamações:\n\n" + ranking_texto
-                else:
-                    resposta_texto = "### 🔍 Análise de Voz do Cliente\n\nCom base nos registos recuperados da base de dados, consulte as evidências auditáveis reais associadas à sua pesquisa."
-
-            resultados_busca = colecao.query(query_embeddings=vetor_pergunta, n_results=60)
-            documentos_raw = resultados_busca["documents"][0]
-            metadados_raw = resultados_busca["metadatas"][0]
-            documentos_validos, metadados_validos = [], []
-
-            for doc, meta in zip(documentos_raw, metadados_raw):
-                try: score = int(float(meta.get("review_score", 3)))
-                except: score = 3
-                cat = meta.get("product_category_name", "desconhecido")
-
-                if categoria_alvo and cat != categoria_alvo: continue
-                if intencao == "negativa" and score <= 2:
-                    documentos_validos.append(doc); metadados_validos.append(meta)
-                elif (intencao == "positiva" or "elogiados" in dados_nlp["pergunta_lower"]) and score >= 4:
-                    documentos_validos.append(doc); metadados_validos.append(meta)
-                elif intencao == "neutra" and not dados_nlp["pede_comparacao"]:
-                    documentos_validos.append(doc); metadados_validos.append(meta)
-
-            if categoria_alvo and len(documentos_validos) == 0:
-                for doc, meta in zip(documentos_raw, metadados_raw):
-                    if meta.get("product_category_name") == categoria_alvo:
-                        documentos_validos.append(doc); metadados_validos.append(meta)
-
-            st.markdown(resposta_texto, unsafe_allow_html=True)
-            if figura_plotly: st.plotly_chart(figura_plotly, use_container_width=True)
-
-            par_evidencias = list(zip(documentos_validos, metadados_validos))
-            limite_inicial = 5
-
-            msg_nova = {
-                "role": "assistant", "conteudo_texto": resposta_texto, "figura_grafico": figura_plotly,
-                "evidencias": par_evidencias, "limite_atual": limite_inicial,
-                "exigir_ranking_flag": deve_mostrar_ranking, "resto_ranking": resto_ranking,
-                "modo_porcentagem": dados_nlp["pergunta_porcentagem"], "total_contexto": total_contexto,
-                "mostrar_botoes_categorias": mostrar_botoes_categorias
-            }
-            
-            st.session_state.mensagens.append(msg_nova)
-            novo_idx = len(st.session_state.mensagens) - 1
-
-            if deve_mostrar_ranking and resto_ranking:
-                with st.expander("📈 Ver restante do Ranking Completo de Categorias"):
-                    for pos, (cat, freq) in enumerate(resto_ranking, 6):
-                        if dados_nlp["pergunta_porcentagem"]:
-                            st.markdown(f"{pos}. `{cat}` — **{(freq / total_contexto) * 100 if total_contexto > 0 else 0:.1f}%** ({freq} ocorrência(s))")
-                        else: st.markdown(f"{pos}. `{cat}` — **{freq} ocorrência(s)**")
-
-            evidencias_visiveis = par_evidencias[:limite_inicial]
-            if par_evidencias:
-                with st.expander(f"🔍 Ver Evidências Reais Auditáveis (Exibindo {len(evidencias_visiveis)} de {len(par_evidencias)})"):
-                    for i, (doc, meta) in enumerate(evidencias_visiveis):
-                        st.markdown(f"**Categoria:** `{meta.get('product_category_name')}` | **Nota:** `{meta.get('review_score')}/5` | **Data:** `{meta.get('order_purchase_timestamp')}`")
-                        st.text(doc)
-                        st.divider()
-
-                    if len(evidencias_visiveis) < len(par_evidencias):
-                        if st.button("Carregar mais 5 evidências", key=f"btn_carregar_novo_{novo_idx}"):
-                            st.session_state.mensagens[novo_idx]["limite_atual"] += 5
-                            st.rerun()
-
-# --- 3. GESTÃO DO CLIQUE NO GRÁFICO (Injeta o texto na conversa e oculta Dashboard) ---
-if st.session_state.cat_selecionada:
-    cat_escolhida = st.session_state.cat_selecionada
-    st.session_state.cat_selecionada = None  # Limpa o estado para não fazer loop
-    
-    pergunta_anterior = st.session_state.get("pergunta_pendente")
-    if not isinstance(pergunta_anterior, str): 
-        pergunta_anterior = "quais são os problemas"
-        
-    st.session_state.mensagens.append({"role": "user", "conteudo_texto": f"Analisar: {cat_escolhida.replace('_', ' ').title()}"})
-    with st.chat_message("user"): 
-        st.markdown(f"Analisar: `{cat_escolhida.replace('_', ' ').title()}`")
-        
-    processar_resposta(pergunta_anterior, categoria_forcada=cat_escolhida)
-
-# --- 4. CAIXA DE TEXTO DO CHAT (Sempre visível no fundo) ---
-if pergunta_utilizador := st.chat_input("Digite sua pergunta sobre as avaliações da Olist..."):
-    st.session_state.mensagens.append({"role": "user", "conteudo_texto": pergunta_utilizador})
-    with st.chat_message("user"): 
-        st.markdown(pergunta_utilizador)
-    processar_resposta(pergunta_utilizador)
+if question := st.chat_input("Pergunte sobre as avaliações. Ex.: o que os clientes falam sobre a embalagem?"):
+  queue_question(question)
+  st.rerun()

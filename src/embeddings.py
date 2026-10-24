@@ -1,83 +1,51 @@
+"""Generates the review embeddings once and stores them as a versioned artifact.
+
+The vectors are saved as float16 (.npy, ~33 MB) instead of committing the
+ChromaDB folder: the SQLite file of a 42k-document collection goes past
+GitHub's 100 MB per-file limit, while loading precomputed vectors into a fresh
+collection takes seconds (see src/vector_store.py). Re-running this script is
+only needed when the knowledge base changes.
+"""
+
 import os
-import chromadb
+
+import numpy as np
 import pandas as pd
 from sentence_transformers import SentenceTransformer
 
+from src.config import (
+    EMBEDDING_IDS_FILE,
+    EMBEDDING_MODEL,
+    EMBEDDINGS_FILE,
+    INDEX_DIR,
+    REVIEWS_CSV,
+)
 
-def criar_banco_vetorial():
-  raiz_projeto = os.path.abspath(
-      os.path.join(os.path.dirname(__file__), "..")
-  )
-  caminho_csv = os.path.join(
-      raiz_projeto, "data", "processed", "reviews_clean.csv"
-  )
-  caminho_chroma = os.path.join(raiz_projeto, "data", "chroma_db")
 
-  print("A carregar a base de dados tratada...")
-  if not os.path.exists(caminho_csv):
-    print(
-        f"Erro: O ficheiro {caminho_csv} nao foi encontrado. Conclua o"
-        " pre-processamento primeiro."
-    )
-    return
-
-  df = pd.read_csv(caminho_csv)
-
-  # Garantir que o review_score é numérico e tratar nulos
-  df["review_score"] = pd.to_numeric(df["review_score"], errors="coerce").fillna(
-      3
-  )
-
-  # Vamos indexar uma amostra maior ou toda a base limpa (ex: 10000 documentos) para garantir variedade de notas baixas
-  df = df.head(10000)
-  print(f"Total de documentos a indexar no ChromaDB: {len(df)}")
-
-  print(
-      "A carregar o modelo de embeddings do Hugging Face"
-      " (sentence-transformers)..."
-  )
-  modelo_embeddings = SentenceTransformer(
-      "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-  )
-
-  print("A gerar os embeddings (vetores) para os comentarios...")
-  textos = df["document_text"].tolist()
-  ids = df["review_id"].astype(str).tolist()
-
-  metadados = []
-  for _, row in df.iterrows():
-    metadados.append({
-        "review_score": int(row["review_score"]),
-        "product_category_name": str(row["product_category_name"]),
-        "order_purchase_timestamp": str(row["order_purchase_timestamp"]),
-    })
-
-  vetores = modelo_embeddings.encode(textos, show_progress_bar=True).tolist()
-
-  print(f"A inicializar o ChromaDB local em: {caminho_chroma}")
-  cliente_chroma = chromadb.PersistentClient(path=caminho_chroma)
-
-  nome_colecao = "olist_reviews_voc"
-  try:
-    cliente_chroma.delete_collection(name=nome_colecao)
-  except:
-    pass
-
-  colecao = cliente_chroma.create_collection(name=nome_colecao)
-
-  print("A inserir os vetores, textos e metadados no ChromaDB...")
-  tamanho_lote = 500
-  for i in range(0, len(textos), tamanho_lote):
-    fim = i + tamanho_lote
-    colecao.add(
-        ids=ids[i:fim],
-        embeddings=vetores[i:fim],
-        documents=textos[i:fim],
-        metadatas=metadados[i:fim],
+def generate_embeddings(batch_size: int = 128):
+  if not os.path.exists(REVIEWS_CSV):
+    raise FileNotFoundError(
+        f"{REVIEWS_CSV} não encontrado. Rode antes: python -m src.preprocessing"
     )
 
-  print("Sucesso! Base vetorial recriada e populada com metadados limpos.")
+  df = pd.read_csv(REVIEWS_CSV)
+  print(f"Documentos a vetorizar: {len(df)}")
+
+  model = SentenceTransformer(EMBEDDING_MODEL)
+  vectors = model.encode(
+      df["review_text"].tolist(),
+      batch_size=batch_size,
+      show_progress_bar=True,
+      normalize_embeddings=True,
+  )
+
+  os.makedirs(INDEX_DIR, exist_ok=True)
+  np.save(EMBEDDINGS_FILE, vectors.astype(np.float16))
+  with open(EMBEDDING_IDS_FILE, "w", encoding="utf-8") as f:
+    f.write("\n".join(df["review_id"].astype(str)))
+
+  print(f"Embeddings salvos em {EMBEDDINGS_FILE} ({vectors.shape[0]} x {vectors.shape[1]})")
 
 
 if __name__ == "__main__":
-  criar_banco_vetorial()
+  generate_embeddings()

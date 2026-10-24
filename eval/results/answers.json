@@ -1,0 +1,1455 @@
+[
+  {
+    "id": "enunciado-1",
+    "question": "Quais são os principais problemas relatados pelos clientes em suas avaliações?",
+    "expect": "answer",
+    "status": "answered",
+    "model": "gemini · gemini-flash-lite-latest",
+    "seconds": 2.6,
+    "filters": [
+      "nota ≤ 2"
+    ],
+    "answer": "Os principais problemas relatados pelos clientes na amostra envolvem atrasos e falhas na entrega, defeitos ou divergências nos produtos recebidos, e dificuldades no atendimento e suporte pós-venda.\n\n* **Atrasos e falhas na entrega:** Foram relatados atrasos de 7 a 21 dias [R2, R3, R4, R7], um caso de produto não entregue [R5] e um problema de não recebimento atribuído aos Correios [R9].\n* **Defeitos e produtos divergentes:** Há relatos de produtos que chegaram com defeitos [R1, R8] e de recebimento de item divergente do que foi comprado [R6].\n* **Dificuldades no atendimento e pós-venda:** Os clientes apontaram dificuldade para contactar o fornecedor [R2], atendimento péssimo [R5], falta de compromisso com o cliente [R7] e que a loja é ruim para resoluções de problemas [R10].\n\nLimite da análise: Amostra de 10 avaliações recuperadas com filtro de nota ≤ 2.",
+    "error": "",
+    "cited": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "evidences": [
+      {
+        "ref": "R1",
+        "review_id": "b6d959c77439cee3748285df1e17ec26",
+        "score": 2,
+        "category": "brinquedos",
+        "text": "Veio com defeitos"
+      },
+      {
+        "ref": "R2",
+        "review_id": "49e3a388c41aec2711c27fe722b77154",
+        "score": 1,
+        "category": "relogios_presentes",
+        "text": "Há uma grande dificuldade em contactar o fornecedor para resolver qualquer problema."
+      },
+      {
+        "ref": "R3",
+        "review_id": "99768f8b67c6ffe1b0bf71d80df6c7f2",
+        "score": 1,
+        "category": "informatica_acessorios",
+        "text": "Preciso resolver meu problema"
+      },
+      {
+        "ref": "R4",
+        "review_id": "452cfaa876b9d0d505ae6ba3f0a217b1",
+        "score": 1,
+        "category": "informatica_acessorios",
+        "text": "TERRIVEL ESTE PROBLEMA DA ENTREGA"
+      },
+      {
+        "ref": "R5",
+        "review_id": "8c6d55fb54f18ddd012b1fefecfc7292",
+        "score": 1,
+        "category": "eletroportateis",
+        "text": "Péssimo atendimento"
+      },
+      {
+        "ref": "R6",
+        "review_id": "db2ad68a772d476d92bae6d8c9a8eb18",
+        "score": 2,
+        "category": "casa_construcao",
+        "text": "Produto recebido divergente ao comprado, gerando frustração e perda de oferta de outras opções analisadas."
+      },
+      {
+        "ref": "R7",
+        "review_id": "c947fcd9fadd5dd3168b0cd7bbf0283e",
+        "score": 1,
+        "category": "automotivo",
+        "text": "Falta de compromisso com o cliente"
+      },
+      {
+        "ref": "R8",
+        "review_id": "a6ae1375e10c5bd2f0984336dbfaf998",
+        "score": 2,
+        "category": "audio",
+        "text": "O produto está com problemas (defeito)."
+      },
+      {
+        "ref": "R9",
+        "review_id": "9183ee1d6da9be1da5e0776fc4b023d6",
+        "score": 1,
+        "category": "telefonia",
+        "text": "NAO CHEGOU POR PROBLEMAS NOS CORREIOS"
+      },
+      {
+        "ref": "R10",
+        "review_id": "940564992edf93c0efb22731a3a754bc",
+        "score": 2,
+        "category": "cool_stuff",
+        "text": "a loja e boa para compra mas ruim pra resoluções dos problemas"
+      }
+    ]
+  },
+  {
+    "id": "enunciado-2",
+    "question": "O que os clientes relatam sobre problemas relacionados à entrega?",
+    "expect": "answer",
+    "status": "answered",
+    "model": "gemini · gemini-flash-lite-latest",
+    "seconds": 2.5,
+    "filters": [
+      "nota ≤ 2"
+    ],
+    "answer": "Os clientes relatam problemas referentes a atrasos, erros nos itens recebidos, falta de entrega e falhas na comunicação do serviço.\n\n- **Atrasos e descumprimento de prazos:** Há relatos de atrasos que variam de 4 a 14 dias [R1, R3, R4, R6, R8, R10], além de uma menção geral de demora [R9] e reclamações sobre o não cumprimento dos prazos [R8, R10].\n- **Erros e divergências nos itens entregues:** Clientes apontam que os pedidos chegam incompletos, incorretos [R2] ou com divergências em relação à quantidade de produtos recebidos [R5].\n- **Falhas na prestação do serviço pelos Correios e falta de suporte:** É relatado que o produto não foi entregue na residência apesar da taxa paga, resultando na devolução do item antes da retirada [R7], além de reclamações sobre a falta de tratamento e resolução dos problemas de entrega [R8].\n- **Informações confusas:** Um cliente destacou que a informação sobre a entrega é muito confusa [R4].\n\nLimite da análise: amostra de 10 avaliações com nota ≤ 2.",
+    "error": "",
+    "cited": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "evidences": [
+      {
+        "ref": "R1",
+        "review_id": "a1074ef6728469383f2a8bf58fd98e51",
+        "score": 1,
+        "category": "utilidades_domesticas",
+        "text": "Atraso na entrega"
+      },
+      {
+        "ref": "R2",
+        "review_id": "249f0e6fef00a6e6dd15aeaad6c0afcc",
+        "score": 1,
+        "category": "beleza_saude",
+        "text": "erro na entrega. a entrega nao chegou correta completa"
+      },
+      {
+        "ref": "R3",
+        "review_id": "452cfaa876b9d0d505ae6ba3f0a217b1",
+        "score": 1,
+        "category": "informatica_acessorios",
+        "text": "TERRIVEL ESTE PROBLEMA DA ENTREGA"
+      },
+      {
+        "ref": "R4",
+        "review_id": "256e445ddba830565ad576854f406761",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "sem comentarios, muito confusa a informação sobre entrega"
+      },
+      {
+        "ref": "R5",
+        "review_id": "42a3a3e2b79465364e24f6f4c642bc23",
+        "score": 1,
+        "category": "cool_stuff",
+        "text": "Em partes. Sou cliente há anos, porém sempre há divergências e problemas na entrega, consta como produto entregue, porém foi entregue apenas 1 produto, aguardo solução!"
+      },
+      {
+        "ref": "R6",
+        "review_id": "8f9772ae7dec3db4af0418fd7fb1be4d",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "Produto com entrega atrasada"
+      },
+      {
+        "ref": "R7",
+        "review_id": "0a6843048d2229baf1201b4783d38df3",
+        "score": 1,
+        "category": "brinquedos",
+        "text": "O serviço de entrega é feita através dos correios e este apesar de ter sido pega taxa entrega , não entrega na residência.Qdo puder ir fazer a retirada na ag. central o produto já havia sido devolvido"
+      },
+      {
+        "ref": "R8",
+        "review_id": "4baf65ba0f4dc753e9cf3d8863433da0",
+        "score": 2,
+        "category": "papelaria",
+        "text": "Falta de consideração com o cliente, pois ocorreu problema na entrega é em momento nenhum o problema foi tratado.duas compras, uma com prazo de entrega 15 e 21/02, as 2 atrasou, liguei dia 23 reclaman"
+      },
+      {
+        "ref": "R9",
+        "review_id": "97b1c66cd7fc0a9e984d1435de5189be",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "Demora na entrega"
+      },
+      {
+        "ref": "R10",
+        "review_id": "14b33ac24083bd93da570659da1630af",
+        "score": 1,
+        "category": "bebes",
+        "text": "Pedido não entregue (prazo de entrega não obedecido)"
+      }
+    ]
+  },
+  {
+    "id": "enunciado-3",
+    "question": "Quais aspectos da experiência de compra são mais elogiados pelos clientes?",
+    "expect": "answer",
+    "status": "answered",
+    "model": "gemini · gemini-flash-lite-latest",
+    "seconds": 1.7,
+    "filters": [
+      "nota ≥ 4"
+    ],
+    "answer": "Com base na amostra recuperada, os clientes elogiam principalmente a qualidade geral da experiência de compra, a qualidade dos produtos recebidos e o cumprimento dos prazos de entrega.\n\n- **Qualidade e satisfação com a compra:** Clientes destacam a excelência e satisfação geral com o processo de aquisição [R1], [R2], [R3], [R4], [R5], [R8], [R9], além de mencionarem o compromisso com o cliente [R10].\n- **Qualidade do produto:** Há elogios direcionados à qualidade dos produtos adquiridos e à conformidade com o anúncio [R2], [R6], [R7], [R10].\n- **Pontualidade na entrega:** A entrega realizada no prazo foi apontada positivamente por clientes [R4], [R9].\n\nLimite da análise: Amostra de 10 avaliações com nota ≥ 4.",
+    "error": "",
+    "cited": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "evidences": [
+      {
+        "ref": "R1",
+        "review_id": "8fe624d31a665d8852770c63a354fa61",
+        "score": 5,
+        "category": "relogios_presentes",
+        "text": "satisfeita com a compra"
+      },
+      {
+        "ref": "R2",
+        "review_id": "e2b4d5970fefa486994421aba7976be9",
+        "score": 5,
+        "category": "eletronicos",
+        "text": "Ótimo vendedor! Produto de qualidade, excelência no processo de compra."
+      },
+      {
+        "ref": "R3",
+        "review_id": "52300a5e6997431d0597e820015ec8ff",
+        "score": 5,
+        "category": "construcao_ferramentas_jardim",
+        "text": "excelente experiência de compra. Obrigado"
+      },
+      {
+        "ref": "R4",
+        "review_id": "71b0927337e42e19d498bdd598e46029",
+        "score": 5,
+        "category": "relogios_presentes",
+        "text": "Entrega. Foi Poditiva a experiência de compra."
+      },
+      {
+        "ref": "R5",
+        "review_id": "d616c8b2fc1e9b6e150b77e78967a4ea",
+        "score": 5,
+        "category": "bebes",
+        "text": "A experiência da compra foi muito satisfatória."
+      },
+      {
+        "ref": "R6",
+        "review_id": "8ec4e05bf5b110611535f49439a2fc39",
+        "score": 4,
+        "category": "esporte_lazer",
+        "text": "Satisfação da compra. Produto recebido de acordo com o anuncio."
+      },
+      {
+        "ref": "R7",
+        "review_id": "954b827dd06383c995a8c902188f3358",
+        "score": 4,
+        "category": "sinalizacao_e_seguranca",
+        "text": "ótima compra. qualidade ótima"
+      },
+      {
+        "ref": "R8",
+        "review_id": "fd10e8df6b2601d4545e528ccc67b759",
+        "score": 5,
+        "category": "livros_interesse_geral",
+        "text": "Satisfeita com a compra, recomendo"
+      },
+      {
+        "ref": "R9",
+        "review_id": "f8686be400c10f9231c1f26d52a480cc",
+        "score": 4,
+        "category": "relogios_presentes",
+        "text": "Ótima aquisição feliz com a compra e entrega"
+      },
+      {
+        "ref": "R10",
+        "review_id": "76df0bd8c9d614662a1e893152b4741f",
+        "score": 5,
+        "category": "informatica_acessorios",
+        "text": "Produto de qualidade! Compromisso com o cliente e qualidade no produto resumem essa compra."
+      }
+    ]
+  },
+  {
+    "id": "enunciado-4",
+    "question": "Quais padrões podem ser identificados nas avaliações de clientes insatisfeitos?",
+    "expect": "answer",
+    "status": "answered",
+    "model": "gemini · gemini-flash-lite-latest",
+    "seconds": 2.9,
+    "filters": [
+      "nota ≤ 2"
+    ],
+    "answer": "Nos clientes insatisfeitos da amostra, os padrões identificados envolvem problemas de qualidade do produto, falhas e atrasos na entrega, além de defeitos e envio de itens incorretos.\n\n* **Problemas com a qualidade e defeitos nos produtos:** Em 4 das 10 avaliações há menção a produtos insatisfatórios, de baixa qualidade, ruins ou com defeitos [R2], [R4], [R5], [R9], sendo que um cliente também recebeu um item incorreto [R8] e outro deseja a troca [R5].\n* **Atrasos e falhas drásticas na entrega:** Em 4 das 10 avaliações os clientes relatam atrasos que variam de 2 a 20 dias [R2], [R3], [R10], além de casos em que a mercadoria sequer foi entregue [R6], [R7].\n* **Falta de atendimento adequado e satisfação:** Em 3 das 10 avaliações os consumidores expressam falta de respeito, péssimo atendimento e ausência de satisfação por parte da loja [R3], [R7], [R10].\n\nLimite da análise: 10 avaliações recuperadas com filtro de nota ≤ 2.",
+    "error": "",
+    "cited": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "evidences": [
+      {
+        "ref": "R1",
+        "review_id": "db90ab0ea5d97cbfa75cb66ea71013cc",
+        "score": 1,
+        "category": "relogios_presentes",
+        "text": "Insatisfação. Negativo"
+      },
+      {
+        "ref": "R2",
+        "review_id": "190b01af91fb754443307e59209136d6",
+        "score": 1,
+        "category": "automotivo",
+        "text": "produto insatisfatorio. demora na entrega e produto de baixa qualidade"
+      },
+      {
+        "ref": "R3",
+        "review_id": "48dfb09da10ec86135fedeb9941364c2",
+        "score": 2,
+        "category": "telefonia",
+        "text": "Ruim. Falta de respeito com cliente"
+      },
+      {
+        "ref": "R4",
+        "review_id": "b6d959c77439cee3748285df1e17ec26",
+        "score": 2,
+        "category": "brinquedos",
+        "text": "Veio com defeitos"
+      },
+      {
+        "ref": "R5",
+        "review_id": "1e0311ba228361042d8e0e1d0cd411fb",
+        "score": 1,
+        "category": "moveis_escritorio",
+        "text": "Produto com defeito. Produto com defeito desejo a troca"
+      },
+      {
+        "ref": "R6",
+        "review_id": "f228dd6fee66568cede962423139fe7c",
+        "score": 2,
+        "category": "cama_mesa_banho",
+        "text": "insatisfação 1"
+      },
+      {
+        "ref": "R7",
+        "review_id": "8c6d55fb54f18ddd012b1fefecfc7292",
+        "score": 1,
+        "category": "eletroportateis",
+        "text": "Péssimo atendimento"
+      },
+      {
+        "ref": "R8",
+        "review_id": "c073a54bbfbbd0282b00f3d50ccdd00f",
+        "score": 1,
+        "category": "telefonia",
+        "text": "reclamação. produto incorreto"
+      },
+      {
+        "ref": "R9",
+        "review_id": "1060d56dcc60ee8aac9cc1e5880c2bf2",
+        "score": 1,
+        "category": "telefonia",
+        "text": "produto ruim. produto de má qualidade"
+      },
+      {
+        "ref": "R10",
+        "review_id": "7a93610296d0a660555dbb57d6b9024c",
+        "score": 2,
+        "category": "cama_mesa_banho",
+        "text": "péssimo *. mercadoria super atrasada e nem satisfação"
+      }
+    ]
+  },
+  {
+    "id": "enunciado-5",
+    "question": "Quais avaliações sustentam a conclusão de que existem problemas recorrentes relacionados ao prazo de entrega?",
+    "expect": "answer",
+    "status": "answered",
+    "model": "gemini · gemini-flash-lite-latest",
+    "seconds": 3.1,
+    "filters": [
+      "nota ≤ 2"
+    ],
+    "answer": "As avaliações recuperadas sustentam que existem problemas recorrentes relacionados à demora e ao descumprimento de prazos de entrega pelos clientes da amostra.\n\n* **Atrasos reais na entrega:** Os clientes relatam que os produtos não chegaram no prazo estipulado, com atrasos que variam de 7 a 24 dias, além de casos de pedidos não entregues [R2, R3, R4, R6, R7, R9].\n* **Insatisfação com a demora e o prazo longo:** Há reclamações genéricas sobre a lentidão do serviço, falta de comprometimento com o prazo e prazos considerados longos, mesmo em situações em que a entrega ocorreu formalmente no prazo ou o produto chegou correto [R1, R5, R8, R10].\n\nLimite da análise: Amostra de 10 avaliações recuperadas com filtro de nota ≤ 2.",
+    "error": "",
+    "cited": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "evidences": [
+      {
+        "ref": "R1",
+        "review_id": "3ffed17f5010b9c6d33706b790732482",
+        "score": 1,
+        "category": "utilidades_domesticas",
+        "text": "Muita demora na entrega"
+      },
+      {
+        "ref": "R2",
+        "review_id": "fc13bf6f397d017a5442582be58498e8",
+        "score": 1,
+        "category": "casa_construcao",
+        "text": "falta de comprometimento com o prazo"
+      },
+      {
+        "ref": "R3",
+        "review_id": "30e18ccf837093149a4f17dc1360a1ce",
+        "score": 1,
+        "category": "perfumaria",
+        "text": "Não respeitou o prazo da entrega"
+      },
+      {
+        "ref": "R4",
+        "review_id": "a1e9b5056896b01638a5aa8e02673955",
+        "score": 1,
+        "category": "moveis_decoracao",
+        "text": "demora na entrega (ainda nao chegou fora do prazo)"
+      },
+      {
+        "ref": "R5",
+        "review_id": "045d330f147f09c3bd2426266ec5d414",
+        "score": 1,
+        "category": "moveis_escritorio",
+        "text": "Nao tem boa avaliação por atraso na entrega"
+      },
+      {
+        "ref": "R6",
+        "review_id": "8b592f04ffb1115da4b08205a4f0f3b1",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "prazo longo de entrega e não chegou no prazo"
+      },
+      {
+        "ref": "R7",
+        "review_id": "0fc42b14539f4177f534382d69d82d3c",
+        "score": 1,
+        "category": "beleza_saude",
+        "text": "demora na entrega"
+      },
+      {
+        "ref": "R8",
+        "review_id": "c7b4ad99640faaf1bebe7f0230d621d6",
+        "score": 2,
+        "category": "cool_stuff",
+        "text": "Demorou de entregar geralmente chega bem antes do prazo teve algo que atrapalhou a entrega!"
+      },
+      {
+        "ref": "R9",
+        "review_id": "f02d4978f58368f3346d8450d52f0ba2",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "Pessimo muita demora na entrega"
+      },
+      {
+        "ref": "R10",
+        "review_id": "1da9941264ebc5c4a093ee4ba82af918",
+        "score": 1,
+        "category": "brinquedos",
+        "text": "O produto chegou correto. O problema foi a demora na entrega."
+      }
+    ]
+  },
+  {
+    "id": "negocio-1",
+    "question": "Quais reclamações relacionadas à entrega aparecem com maior frequência?",
+    "expect": "answer",
+    "status": "answered",
+    "model": "gemini · gemini-flash-lite-latest",
+    "seconds": 1.9,
+    "filters": [
+      "nota ≤ 2"
+    ],
+    "answer": "As reclamações relacionadas à entrega concentram-se principalmente em atrasos, demora generalizada e falhas operacionais dos Correios.\n\n* **Atraso na entrega:** Clientes relatam atrasos que variam de 3 a 14 dias [R1], [R8], [R10], além de menções diretas a atrasos e demora [R3], [R4].\n* **Problemas operacionais e falta de clareza:** Há registros de falta de entrega na residência pelos Correios mesmo com taxa paga, resultando na devolução do produto [R6], além de informações confusas [R2], desencontros nas entregas [R5] e solicitações para rever a política de entrega [R9].\n\nLimite da análise: amostra de 10 avaliações com nota ≤ 2.",
+    "error": "",
+    "cited": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      8,
+      9,
+      10
+    ],
+    "evidences": [
+      {
+        "ref": "R1",
+        "review_id": "a1074ef6728469383f2a8bf58fd98e51",
+        "score": 1,
+        "category": "utilidades_domesticas",
+        "text": "Atraso na entrega"
+      },
+      {
+        "ref": "R2",
+        "review_id": "256e445ddba830565ad576854f406761",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "sem comentarios, muito confusa a informação sobre entrega"
+      },
+      {
+        "ref": "R3",
+        "review_id": "97b1c66cd7fc0a9e984d1435de5189be",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "Demora na entrega"
+      },
+      {
+        "ref": "R4",
+        "review_id": "ef3905df6593f5fa7faebc82fb85e2e6",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "Demora a entrega"
+      },
+      {
+        "ref": "R5",
+        "review_id": "949eca021ed60d00a2d2bda3cc686d4d",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "muitos desencontros nas entregas de produtos"
+      },
+      {
+        "ref": "R6",
+        "review_id": "0a6843048d2229baf1201b4783d38df3",
+        "score": 1,
+        "category": "brinquedos",
+        "text": "O serviço de entrega é feita através dos correios e este apesar de ter sido pega taxa entrega , não entrega na residência.Qdo puder ir fazer a retirada na ag. central o produto já havia sido devolvido"
+      },
+      {
+        "ref": "R7",
+        "review_id": "e8a7de56575f45bfff67b585209c037f",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "Prazo de entrega"
+      },
+      {
+        "ref": "R8",
+        "review_id": "0dc86297eca13a173eb181c0d47ceb66",
+        "score": 1,
+        "category": "esporte_lazer",
+        "text": "Atrasou na entrega"
+      },
+      {
+        "ref": "R9",
+        "review_id": "a6d8671d04e0055b62713f3bfe2c05cd",
+        "score": 1,
+        "category": "ferramentas_jardim",
+        "text": "Rever a política de entrega"
+      },
+      {
+        "ref": "R10",
+        "review_id": "fbd9cc5a7770c84243e9701ac9ac2309",
+        "score": 2,
+        "category": "moveis_decoracao",
+        "text": "Demorando muito a entrega"
+      }
+    ]
+  },
+  {
+    "id": "negocio-2",
+    "question": "Existem padrões recorrentes nas avaliações relacionadas à qualidade dos produtos?",
+    "expect": "answer",
+    "status": "answered",
+    "model": "gemini · gemini-flash-lite-latest",
+    "seconds": 3.6,
+    "filters": [],
+    "answer": "As avaliações recuperadas indicam que a percepção sobre a qualidade dos produtos é majoritariamente positiva, embora haja menções isoladas de insatisfação ou necessidade de uso prévio.\n\n- Elogios diretos à qualidade: Em 6 das 10 avaliações, os clientes afirmam explicitamente que o produto é de qualidade [R1], [R2], [R4], [R6], [R8], [R10] (além de uma menção com pequeno erro de digitação [R9]).\n- Críticas e ressalvas à qualidade: Há uma avaliação que aponta \"má qualidade do produto\" [R3] e outra que classifica o item como sendo de \"média qualidade\" [R7].\n- Avaliação pendente de uso: Em 1 avaliação, o cliente indica que ainda precisa usar o item para poder avaliá-lo [R5].\n\nLimite da análise: Amostra de 10 avaliações recuperadas, sem filtros aplicados.",
+    "error": "",
+    "cited": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "evidences": [
+      {
+        "ref": "R1",
+        "review_id": "15c72b68259c35ea984ed16bf7633730",
+        "score": 4,
+        "category": "ferramentas_jardim",
+        "text": "produto de qualidade"
+      },
+      {
+        "ref": "R2",
+        "review_id": "0cd25123ee693761394d2487b0fa3cc4",
+        "score": 5,
+        "category": "esporte_lazer",
+        "text": "Pontualidade e qualidade do produto."
+      },
+      {
+        "ref": "R3",
+        "review_id": "69c6002c32816bf3303198f82a69791d",
+        "score": 3,
+        "category": "perfumaria",
+        "text": "má qualidade do produto"
+      },
+      {
+        "ref": "R4",
+        "review_id": "e5ffa47e3f2e6fd7842666ed9f857342",
+        "score": 5,
+        "category": "esporte_lazer",
+        "text": "Produto de qualidade e dentro do prazo"
+      },
+      {
+        "ref": "R5",
+        "review_id": "541b0f1c04cf05d526b766f0d7a799f0",
+        "score": 5,
+        "category": "automotivo",
+        "text": "Agora e usar o produto para avaliar a qualidade."
+      },
+      {
+        "ref": "R6",
+        "review_id": "2e41aff5540a25f4ae6d0fd675458bb5",
+        "score": 5,
+        "category": "cama_mesa_banho",
+        "text": "produtos de qualidade"
+      },
+      {
+        "ref": "R7",
+        "review_id": "65e6a1e52fdfab9a0cfd32db5dc0f581",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "produto de média qualidade"
+      },
+      {
+        "ref": "R8",
+        "review_id": "ac5bb807a20ac6e17c4fea902dd5c2d7",
+        "score": 5,
+        "category": "cama_mesa_banho",
+        "text": "Recomendo produtos. Toma qualidade."
+      },
+      {
+        "ref": "R9",
+        "review_id": "f3bde40ebd9d0c6b35ea17301315fd10",
+        "score": 5,
+        "category": "moveis_decoracao",
+        "text": "Produto ce qualidade"
+      },
+      {
+        "ref": "R10",
+        "review_id": "e84592fd235ef984eb5576461b5215bb",
+        "score": 5,
+        "category": "cama_mesa_banho",
+        "text": "Pontualidade. Produto de qualidade."
+      }
+    ]
+  },
+  {
+    "id": "negocio-3",
+    "question": "O que os clientes falam sobre o atendimento do vendedor?",
+    "expect": "answer",
+    "status": "answered",
+    "model": "gemini · gemini-flash-lite-latest",
+    "seconds": 2.2,
+    "filters": [],
+    "answer": "Os clientes destacam positivamente o compromisso, a idoneidade e o cumprimento de prazos pelos vendedores, embora haja registro pontual de dificuldade de diálogo.\n\n* **Compromisso e respeito:** Clientes apontam que os vendedores demonstram compromisso com o cliente e com a prestação de serviços [R1], [R3], [R6].\n* **Qualidade do atendimento e descrições:** Há menções a vendedores ótimos [R4], excelentes [R9], [R10], além de produtos entregues conforme descritos [R8] e bom serviço da loja [R7].\n* **Dificuldade de comunicação:** Em uma das avaliações, um cliente relatou que é difícil manter o diálogo com o vendedor [R5].\n\nLimite da análise: 10 avaliações recuperadas | filtros aplicados: nenhum",
+    "error": "",
+    "cited": [
+      1,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "evidences": [
+      {
+        "ref": "R1",
+        "review_id": "6ec93e77f444e0b1703740a69122e35d",
+        "score": 5,
+        "category": "esporte_lazer",
+        "text": "Vendedor compromisso do vou o cliente"
+      },
+      {
+        "ref": "R2",
+        "review_id": "f6362b9da08c0cb3093dd517f5217e39",
+        "score": 5,
+        "category": "informatica_acessorios",
+        "text": "Avaliação do vendedor"
+      },
+      {
+        "ref": "R3",
+        "review_id": "0afacfbf7227b075c599d63c9c0c2c0a",
+        "score": 5,
+        "category": "bebes",
+        "text": "Empresa comprometida com o atendimento ao cliente e idônea nos produtos que vendem"
+      },
+      {
+        "ref": "R4",
+        "review_id": "d3d96cfe12e088db4eb4e94086a71cb3",
+        "score": 5,
+        "category": "eletronicos",
+        "text": "Vendedores otimos"
+      },
+      {
+        "ref": "R5",
+        "review_id": "faf9562f00cc9e7c091b667170e215fb",
+        "score": 2,
+        "category": "beleza_saude",
+        "text": "Difícil diálogo com vendedor"
+      },
+      {
+        "ref": "R6",
+        "review_id": "ce68db80d80267c04096e59a65a6b18f",
+        "score": 5,
+        "category": "automotivo",
+        "text": "Compromisso e respeito para com os clientes"
+      },
+      {
+        "ref": "R7",
+        "review_id": "67535c509a64f1f1abaf232afa5998fa",
+        "score": 5,
+        "category": "fashion_bolsas_e_acessorios",
+        "text": "Bom produto é serviço da loja"
+      },
+      {
+        "ref": "R8",
+        "review_id": "17102aaf6da7abbc1dd45cd8a6c7d3b8",
+        "score": 5,
+        "category": "informatica_acessorios",
+        "text": "Produto conforme descrito pelo vendedor"
+      },
+      {
+        "ref": "R9",
+        "review_id": "59f56ca12912f3f57d4c1a877a90dc6d",
+        "score": 5,
+        "category": "papelaria",
+        "text": "Excelente vendedor entrega dentro do prazo"
+      },
+      {
+        "ref": "R10",
+        "review_id": "377945166e0e849efe16da428aba83ac",
+        "score": 5,
+        "category": "construcao_ferramentas_construcao",
+        "text": "Execelente vendedor"
+      }
+    ]
+  },
+  {
+    "id": "negocio-4",
+    "question": "Os clientes reclamam de receber produto diferente do anunciado?",
+    "expect": "answer",
+    "status": "answered",
+    "model": "gemini · gemini-flash-lite-latest",
+    "seconds": 2.3,
+    "filters": [
+      "nota ≤ 2"
+    ],
+    "answer": "Sim, há reclamações de clientes sobre o recebimento de produtos diferentes dos anunciados na amostra analisada.\n\n* **Recebimento de item divergente:** Em 8 das 10 avaliações, os clientes relatam que a loja anuncia um produto e entrega outro completamente diferente [R1], [R3], [R4], [R5], [R6], [R7], [R8], [R9].\n* **Impacto no funcionamento e qualidade:** Os clientes apontam que a divergência altera o funcionamento do item [R1] e mencionam que os produtos entregues são de menor qualidade [R5], [R9] ou de outra marca [R8].\n* **Busca por solução:** Há pedidos de orientação para realizar a troca do item incorreto [R4], [R5] e questionamentos sobre como proceder para receber o produto correto [R2].\n\nLimite da análise: Amostra de 10 avaliações com nota ≤ 2.",
+    "error": "",
+    "cited": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "evidences": [
+      {
+        "ref": "R1",
+        "review_id": "4481b7d6375b34d2d6f82151f77c5526",
+        "score": 1,
+        "category": "construcao_ferramentas_construcao",
+        "text": "Incorreto. O produto oferecido no anúncio é um, mas o que foi entregue se difere de forma que altera seu funcionamento."
+      },
+      {
+        "ref": "R2",
+        "review_id": "3e0f1062f76a97d22d13c4156c69ef03",
+        "score": 1,
+        "category": "utilidades_domesticas",
+        "text": "Gostaria de saber a quem e como reclamar para receber o produto correto. Grata."
+      },
+      {
+        "ref": "R3",
+        "review_id": "b736ff4204044e49e39062584d06fa74",
+        "score": 1,
+        "category": "eletroportateis",
+        "text": "A loja anuncia um produto e entrega outro."
+      },
+      {
+        "ref": "R4",
+        "review_id": "08528f70f579f0c830189efc523d2182",
+        "score": 1,
+        "category": "desconhecido",
+        "text": "Produto errado. Entrega do produto diferente do solicitado Aguardo orientação para a troca"
+      },
+      {
+        "ref": "R5",
+        "review_id": "31e60ea253684567293ba02673d47914",
+        "score": 1,
+        "category": "informatica_acessorios",
+        "text": "O produto não foi entregue conforme o anúncio. Foi entregue um produto diferente e de menor qualidade. Aguardando contato da loja para esclarecimentos do ocorrido e orientações para a troca."
+      },
+      {
+        "ref": "R6",
+        "review_id": "2d90bdb77533cae4c2957b2e9f315a91",
+        "score": 1,
+        "category": "eletroportateis",
+        "text": "Anunciou um produto entregou diferente"
+      },
+      {
+        "ref": "R7",
+        "review_id": "51a1578250f045f0a1044b653ee9b3be",
+        "score": 1,
+        "category": "informatica_acessorios",
+        "text": "produto diferente do anunciado"
+      },
+      {
+        "ref": "R8",
+        "review_id": "d0a222871f5bc0369fae1154723d1cce",
+        "score": 1,
+        "category": "informatica_acessorios",
+        "text": "Produto entregue nao confere com o anunciado...me entregaram um produto. Totalmete diferente..der outra marca...."
+      },
+      {
+        "ref": "R9",
+        "review_id": "c099aafb6db35704451859b711b53425",
+        "score": 1,
+        "category": "informatica_acessorios",
+        "text": "O produto anunciado é um e o produto entregue é outro e de baixissima qualidade. Inadimissivel esse tipo de atitude que fere o codigo de defesa do consumidor, entregar produto diferente do anunciado"
+      },
+      {
+        "ref": "R10",
+        "review_id": "bb5efdb064be56f4abbb502f4e8ae2b6",
+        "score": 1,
+        "category": "esporte_lazer",
+        "text": "Deixem bem informado ao cliente que o produto nao esta disponivel no estoque,pois vocês esperam o cliente fazer a compra e emitem nota fiscal de um produto que nao esta disponivel mais e nao avisam ."
+      }
+    ]
+  },
+  {
+    "id": "metadados-1",
+    "question": "Quais são os principais problemas relatados nas avaliações com nota baixa?",
+    "expect": "answer",
+    "status": "answered",
+    "model": "gemini · gemini-flash-lite-latest",
+    "seconds": 3.9,
+    "filters": [
+      "nota ≤ 2"
+    ],
+    "answer": "Nas avaliações com nota baixa recuperadas, os principais problemas relatados pelos clientes envolvem defeitos e baixa qualidade nos produtos, além de atrasos e falhas na entrega.\n\n* Defeitos e baixa qualidade do produto: Os clientes relataram recebimento de itens com defeitos, baixa qualidade, acabamento ruim e produtos fracos [R1], [R2], [R7], [R9], [R10].\n* Atrasos e problemas na entrega: Há relatos de entregas atrasadas (de 4 a 21 dias), falta de compromisso, pedidos não entregues e problemas logísticos com os Correios [R3], [R4], [R5], [R6], [R7].\n\nLimite da análise: Amostra de 10 avaliações recuperadas com filtro de nota ≤ 2.",
+    "error": "",
+    "cited": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      9,
+      10
+    ],
+    "evidences": [
+      {
+        "ref": "R1",
+        "review_id": "b6d959c77439cee3748285df1e17ec26",
+        "score": 2,
+        "category": "brinquedos",
+        "text": "Veio com defeitos"
+      },
+      {
+        "ref": "R2",
+        "review_id": "96b1d5f199ee9c1da0a952ffe8902cec",
+        "score": 1,
+        "category": "desconhecido",
+        "text": "a qualidade é baixa"
+      },
+      {
+        "ref": "R3",
+        "review_id": "358f8960d56c93578361c94ad748da07",
+        "score": 1,
+        "category": "automotivo",
+        "text": "Péssima entrega"
+      },
+      {
+        "ref": "R4",
+        "review_id": "99768f8b67c6ffe1b0bf71d80df6c7f2",
+        "score": 1,
+        "category": "informatica_acessorios",
+        "text": "Preciso resolver meu problema"
+      },
+      {
+        "ref": "R5",
+        "review_id": "fa6802dda2cd5015410612ad9725dfbf",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "Falta de compromisso"
+      },
+      {
+        "ref": "R6",
+        "review_id": "9183ee1d6da9be1da5e0776fc4b023d6",
+        "score": 1,
+        "category": "telefonia",
+        "text": "NAO CHEGOU POR PROBLEMAS NOS CORREIOS"
+      },
+      {
+        "ref": "R7",
+        "review_id": "b54d02f7f1520b3995f84b77ab0dacb3",
+        "score": 1,
+        "category": "desconhecido",
+        "text": "Péssima meu produtdefeito"
+      },
+      {
+        "ref": "R8",
+        "review_id": "db90ab0ea5d97cbfa75cb66ea71013cc",
+        "score": 1,
+        "category": "relogios_presentes",
+        "text": "Insatisfação. Negativo"
+      },
+      {
+        "ref": "R9",
+        "review_id": "3a561d4061382b16e9405ebb31ea767d",
+        "score": 2,
+        "category": "eletroportateis",
+        "text": "Produto mal acabado"
+      },
+      {
+        "ref": "R10",
+        "review_id": "9b3505bb05363ce45d2214e53f1875f3",
+        "score": 1,
+        "category": "fashion_calcados",
+        "text": "Um pouco fraca."
+      }
+    ]
+  },
+  {
+    "id": "metadados-2",
+    "question": "O que os clientes mais elogiam em beleza e saúde?",
+    "expect": "answer",
+    "status": "answered",
+    "model": "gemini · gemini-flash-lite-latest",
+    "seconds": 2.3,
+    "filters": [
+      "nota ≥ 4",
+      "categoria = beleza_saude"
+    ],
+    "answer": "Na amostra recuperada da categoria beleza e saúde, os clientes elogiam de forma geral a recomendação da loja e a qualidade dos produtos e atendimento.\n\n* Recomendação geral do serviço e da loja: Os clientes expressam satisfação geral e recomendam a compra nas avaliações [R1], [R2], [R3], [R4], [R5], [R6], [R8], [R9] e [R10].\n* Qualidade dos produtos: Clientes mencionam que os produtos são excelentes ou ótimos [R4], [R5], [R7] e [R10].\n* Bom atendimento: Há menção específica sobre ter sido muito bem atendido [R3].\n\nLimite da análise: Amostra de 10 avaliações com nota ≥ 4 na categoria beleza_saude.",
+    "error": "",
+    "cited": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "evidences": [
+      {
+        "ref": "R1",
+        "review_id": "46eb7aeb025c80f0949fcb5a24850c3b",
+        "score": 4,
+        "category": "beleza_saude",
+        "text": "super recomendo"
+      },
+      {
+        "ref": "R2",
+        "review_id": "e4e29ac413a8dfa4bfdf4b506463b5ae",
+        "score": 5,
+        "category": "beleza_saude",
+        "text": "Estão de parabéns"
+      },
+      {
+        "ref": "R3",
+        "review_id": "80505dc08061cad6bd3157c4a976d8c9",
+        "score": 5,
+        "category": "beleza_saude",
+        "text": "recomendado. Muito bem atendido"
+      },
+      {
+        "ref": "R4",
+        "review_id": "dd7ad46e529dee82ac30a6f2561e0aa3",
+        "score": 5,
+        "category": "beleza_saude",
+        "text": "recomendo. Ótima loja e produtos"
+      },
+      {
+        "ref": "R5",
+        "review_id": "0577fe8031353bcea3ae73fbc80034b5",
+        "score": 5,
+        "category": "beleza_saude",
+        "text": "excelente, recomendo pra todos"
+      },
+      {
+        "ref": "R6",
+        "review_id": "00a1b1c8636bce2a676e93c203c1d585",
+        "score": 4,
+        "category": "beleza_saude",
+        "text": "satisfeito eu recomendo"
+      },
+      {
+        "ref": "R7",
+        "review_id": "0c4619cf51f22f9b8d1510e54baa4c19",
+        "score": 5,
+        "category": "beleza_saude",
+        "text": "Produto excelente. Recomendo."
+      },
+      {
+        "ref": "R8",
+        "review_id": "d706abd600a9666f190a00ae8eced904",
+        "score": 5,
+        "category": "beleza_saude",
+        "text": "Incrível. Super recomendo"
+      },
+      {
+        "ref": "R9",
+        "review_id": "d4421a70f8af59248e3594c29a33284e",
+        "score": 5,
+        "category": "beleza_saude",
+        "text": "recomendo. recomendo"
+      },
+      {
+        "ref": "R10",
+        "review_id": "93f89fec0d1e8c2c7b4730befa9b0687",
+        "score": 5,
+        "category": "beleza_saude",
+        "text": "Adorei Obrigada super recomendo"
+      }
+    ]
+  },
+  {
+    "id": "metadados-3",
+    "question": "Quais temas aparecem nas avaliações relacionadas a experiências de entrega insatisfatórias?",
+    "expect": "answer",
+    "status": "answered",
+    "model": "gemini · gemini-flash-lite-latest",
+    "seconds": 2.6,
+    "filters": [
+      "nota ≤ 2",
+      "entrega atrasada ou não entregue"
+    ],
+    "answer": "As experiências insatisfatórias de entrega na amostra envolvem atrasos expressivos, falhas na prestação de serviço e cancelamentos sem justificativa.\n\n* Atrasos significativos e não cumprimento de prazos: clientes relatam atrasos que variam de 2 a 18 dias, além de prazos que não foram cumpridos [R1], [R2], [R4], [R7], [R9].\n* Falta de comunicação e informações confusas: os compradores apontam informações confusas sobre a entrega, demora ou ausência de satisfação e justificativas sobre o status do pedido [R3], [R9].\n* Pedidos não entregues e cancelamentos sem explicação: há registros de compras pagas que resultaram em pedidos cancelados sem explicações ou mercadorias que simplesmente não foram entregues, acompanhadas de falta de atendimento útil e protocolos sem resposta [R5], [R8], [R10].\n\nLimite da análise: amostra de 10 avaliações recuperadas com nota ≤ 2 e filtro de entrega atrasada ou não entregue.",
+    "error": "",
+    "cited": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      7,
+      8,
+      9,
+      10
+    ],
+    "evidences": [
+      {
+        "ref": "R1",
+        "review_id": "5e728b72bbe8e793ad1c12e93a9fe9aa",
+        "score": 2,
+        "category": "beleza_saude",
+        "text": "péssima entrega"
+      },
+      {
+        "ref": "R2",
+        "review_id": "190b01af91fb754443307e59209136d6",
+        "score": 1,
+        "category": "automotivo",
+        "text": "produto insatisfatorio. demora na entrega e produto de baixa qualidade"
+      },
+      {
+        "ref": "R3",
+        "review_id": "256e445ddba830565ad576854f406761",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "sem comentarios, muito confusa a informação sobre entrega"
+      },
+      {
+        "ref": "R4",
+        "review_id": "db398c0ddf7b63f9ec7e07a246940d4b",
+        "score": 1,
+        "category": "informatica_acessorios",
+        "text": "Não Recomendado. Prazo de entrega não cumprido."
+      },
+      {
+        "ref": "R5",
+        "review_id": "0d592da0b11f266efd97a16956ff6417",
+        "score": 1,
+        "category": "desconhecido",
+        "text": "compra efetuada,debito autorizado ,pedido cancelado sem explicações.Extrema falta de respeito e consideração com os clientes."
+      },
+      {
+        "ref": "R6",
+        "review_id": "f228dd6fee66568cede962423139fe7c",
+        "score": 2,
+        "category": "cama_mesa_banho",
+        "text": "insatisfação 1"
+      },
+      {
+        "ref": "R7",
+        "review_id": "14b0789b13945ada55a26a4a203d4636",
+        "score": 2,
+        "category": "telefonia",
+        "text": "Mais agilidade na entrega"
+      },
+      {
+        "ref": "R8",
+        "review_id": "dbf78eb5345c4b811419952df0d29b33",
+        "score": 1,
+        "category": "cool_stuff",
+        "text": "Entrega não realizada, sem nenhun atendimento útil que nos informassem quando a entrega será feita, 100% de descaso e completa falta de comprometimento. Protocolos abertos sem resposta alguma. Nota 0!"
+      },
+      {
+        "ref": "R9",
+        "review_id": "91c3523eb116609c5e674ea0fca34bf4",
+        "score": 1,
+        "category": "telefonia",
+        "text": "muita demora na entrega, não dão satisfação"
+      },
+      {
+        "ref": "R10",
+        "review_id": "bbe45b8782c123d652f8ed8563928efc",
+        "score": 1,
+        "category": "relogios_presentes",
+        "text": "Produto não entregue. Ainda aguardando, porém, já desapontado com o serviço de entrega."
+      }
+    ]
+  },
+  {
+    "id": "metadados-4",
+    "question": "Quais as reclamações sobre cama, mesa e banho em 2018?",
+    "expect": "answer",
+    "status": "answered",
+    "model": "gemini · gemini-flash-lite-latest",
+    "seconds": 3.4,
+    "filters": [
+      "nota ≤ 2",
+      "categoria = cama_mesa_banho",
+      "ano da compra = 2018"
+    ],
+    "answer": "As reclamações sobre cama, mesa e banho em 2018 concentram-se em problemas de entrega (atrasos, não recebimento e entregas parciais ou incompletas), falhas no envio dos itens corretos e insatisfação com a qualidade do produto.\n\n* **Problemas de entrega e atrasos:** Clientes relataram atrasos de 6 dias [R5], demora generalizada na entrega [R9] e pedidos que ainda não haviam sido entregues [R3].\n* **Entregas parciais, incompletas ou itens faltantes:** Houve relatos de recebimento de apenas parte dos produtos comprados, como a falta do segundo produto de um pedido [R4], falta do controle remoto da cortina [R8], entrega de apenas uma das duas saias compradas apesar de o rastreio indicar ambas [R10], além de menção genérica a entrega parcial [R8].\n* **Erro no produto enviado:** Um cliente relatou ter recebido um tapete errado e estar aguardando providências [R7].\n* **Baixa qualidade do produto:** Um cliente avaliou as toalhas como muito ruins e finas [R2].\n\nLimite da análise: Amostra de 10 avaliações recuperadas com nota ≤ 2, categoria cama_mesa_banho e ano de compra 2018.",
+    "error": "",
+    "cited": [
+      2,
+      3,
+      4,
+      5,
+      7,
+      8,
+      9,
+      10
+    ],
+    "evidences": [
+      {
+        "ref": "R1",
+        "review_id": "e8a7de56575f45bfff67b585209c037f",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "Prazo de entrega"
+      },
+      {
+        "ref": "R2",
+        "review_id": "7e3a34981cab2ef0c9d634b58c69eb31",
+        "score": 2,
+        "category": "cama_mesa_banho",
+        "text": "As toalhas muito ruins , finas"
+      },
+      {
+        "ref": "R3",
+        "review_id": "42640ef0057b47f4bafd780b8be55f83",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "Avaliação prejudicada. Produto ainda não foi entregue !!!"
+      },
+      {
+        "ref": "R4",
+        "review_id": "77bb1cf61b23d884784c7b481fb06183",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "RECOMENDO. SOMENTE 1 PRODUTO MEU CHEGOU GOSTARIA DE SABER DO OUTRO"
+      },
+      {
+        "ref": "R5",
+        "review_id": "5193565d8ef972341e963399fedec040",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "Entrega atrasada"
+      },
+      {
+        "ref": "R6",
+        "review_id": "733608b355581c3668cefd6d283180cb",
+        "score": 2,
+        "category": "cama_mesa_banho",
+        "text": "obrigado produto bom. bom produto , vou ainda fazer o teste da lavagem ainda"
+      },
+      {
+        "ref": "R7",
+        "review_id": "6eb22fdbb42ecce1a902bab10ce2520c",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "Me entregaram um tapete errado. Estou aguardando providencias"
+      },
+      {
+        "ref": "R8",
+        "review_id": "9f8fd076fe0c2d29fb0136e5f288275b",
+        "score": 2,
+        "category": "cama_mesa_banho",
+        "text": "Entrega parcial .2 mercadoria 1 entrega.me entregarao cortina falta conteole remoto"
+      },
+      {
+        "ref": "R9",
+        "review_id": "75d181c544764f29820ddf91cd9bb653",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "não reconmendo. Demora na entrega"
+      },
+      {
+        "ref": "R10",
+        "review_id": "44359bf768889f53a5fd66e6af0ce3ba",
+        "score": 1,
+        "category": "cama_mesa_banho",
+        "text": "APENAS 1. EU COMPREI 2 SAIAS DISTINTAS E SÓ RECEBI UMA. NO RASTREIO, APARECEM ENTREGUES AS DUAS."
+      }
+    ]
+  },
+  {
+    "id": "fora-1",
+    "question": "Qual a capital da França?",
+    "expect": "refuse",
+    "status": "out_of_scope",
+    "model": "",
+    "seconds": 0.0,
+    "filters": [],
+    "answer": "Essa pergunta está fora do escopo da base de conhecimento. Eu respondo apenas sobre a experiência de compra relatada nas avaliações de clientes da Olist: produtos, entrega, atendimento, preço, qualidade e temas parecidos.",
+    "error": "",
+    "cited": [],
+    "evidences": []
+  },
+  {
+    "id": "fora-2",
+    "question": "Qual a previsão do tempo para amanhã em São Paulo?",
+    "expect": "refuse",
+    "status": "out_of_scope",
+    "model": "",
+    "seconds": 0.0,
+    "filters": [],
+    "answer": "Essa pergunta está fora do escopo da base de conhecimento. Eu respondo apenas sobre a experiência de compra relatada nas avaliações de clientes da Olist: produtos, entrega, atendimento, preço, qualidade e temas parecidos.",
+    "error": "",
+    "cited": [],
+    "evidences": []
+  },
+  {
+    "id": "fora-3",
+    "question": "Quem ganhou a Copa do Mundo de 2002?",
+    "expect": "refuse",
+    "status": "out_of_scope",
+    "model": "",
+    "seconds": 0.0,
+    "filters": [],
+    "answer": "Essa pergunta está fora do escopo da base de conhecimento. Eu respondo apenas sobre a experiência de compra relatada nas avaliações de clientes da Olist: produtos, entrega, atendimento, preço, qualidade e temas parecidos.",
+    "error": "",
+    "cited": [],
+    "evidences": []
+  },
+  {
+    "id": "fora-4",
+    "question": "Como funciona a fotossíntese?",
+    "expect": "refuse",
+    "status": "out_of_scope",
+    "model": "",
+    "seconds": 0.0,
+    "filters": [],
+    "answer": "Essa pergunta está fora do escopo da base de conhecimento. Eu respondo apenas sobre a experiência de compra relatada nas avaliações de clientes da Olist: produtos, entrega, atendimento, preço, qualidade e temas parecidos.",
+    "error": "",
+    "cited": [],
+    "evidences": []
+  },
+  {
+    "id": "fora-5",
+    "question": "Escreva um poema sobre o mar",
+    "expect": "refuse",
+    "status": "out_of_scope",
+    "model": "",
+    "seconds": 0.0,
+    "filters": [],
+    "answer": "Essa pergunta está fora do escopo da base de conhecimento. Eu respondo apenas sobre a experiência de compra relatada nas avaliações de clientes da Olist: produtos, entrega, atendimento, preço, qualidade e temas parecidos.",
+    "error": "",
+    "cited": [],
+    "evidences": []
+  },
+  {
+    "id": "adversaria-1",
+    "question": "Qual o preço do bitcoin hoje?",
+    "expect": "refuse",
+    "status": "no_evidence",
+    "model": "",
+    "seconds": 0.2,
+    "filters": [],
+    "answer": "Não encontrei avaliações suficientes na base para responder a essa pergunta com segurança.\n\nMotivo: 0 avaliação(ões) ficaram dentro do limiar de relevância (mínimo exigido: 3); a mais próxima tem distância 0.55 e o limiar é 0.40.\n\nA pergunta pode estar fora do escopo das avaliações de clientes da Olist.",
+    "error": "",
+    "cited": [],
+    "evidences": []
+  },
+  {
+    "id": "adversaria-2",
+    "question": "Como trocar o óleo do carro?",
+    "expect": "refuse",
+    "status": "no_evidence",
+    "model": "",
+    "seconds": 0.1,
+    "filters": [
+      "categoria = automotivo"
+    ],
+    "answer": "Não encontrei avaliações suficientes na base para responder a essa pergunta com segurança.\n\nMotivo: 0 avaliação(ões) ficaram dentro do limiar de relevância (mínimo exigido: 3); a mais próxima tem distância 0.54 e o limiar é 0.40.\n\nFiltros usados: categoria = automotivo. Tente uma pergunta mais ampla ou sem algum desses filtros.",
+    "error": "",
+    "cited": [],
+    "evidences": []
+  },
+  {
+    "id": "adversaria-3",
+    "question": "Qual foi o lucro líquido da Olist em 2018?",
+    "expect": "refuse",
+    "status": "llm_refused",
+    "model": "gemini · gemini-flash-lite-latest",
+    "seconds": 2.0,
+    "filters": [
+      "ano da compra = 2018"
+    ],
+    "answer": "Não encontrei avaliações suficientes na base para responder a essa pergunta com segurança.\n\nO modelo leu as avaliações recuperadas e concluiu que elas não respondem à pergunta.",
+    "error": "",
+    "cited": [],
+    "evidences": [
+      {
+        "ref": "R1",
+        "review_id": "6e385535a7e36edaecea6ba8dee14b65",
+        "score": 4,
+        "category": "fashion_bolsas_e_acessorios",
+        "text": "vale o custo benefício"
+      },
+      {
+        "ref": "R2",
+        "review_id": "57a380cbbadd42729deb1aa0d5272c60",
+        "score": 4,
+        "category": "eletronicos",
+        "text": "Produto dentro dom esperado."
+      },
+      {
+        "ref": "R3",
+        "review_id": "1c5126988da5a57e2c3f324d44ef0b82",
+        "score": 5,
+        "category": "moveis_escritorio",
+        "text": "Produto Ok. Produto entregue conforme anunciado. Bom custo beneficio!Recomendo!"
+      },
+      {
+        "ref": "R4",
+        "review_id": "1939d0b7a33c09fbd259765149b4c873",
+        "score": 4,
+        "category": "relogios_presentes",
+        "text": "Produto recebido"
+      },
+      {
+        "ref": "R5",
+        "review_id": "e986d799c9e32a490dff4adc50f9fb5a",
+        "score": 5,
+        "category": "brinquedos",
+        "text": "Perfeito. Produto corresponde ao anunciado. Ótimo custo beneficio."
+      },
+      {
+        "ref": "R6",
+        "review_id": "85da16503a576748ee5544bd8a5b9355",
+        "score": 5,
+        "category": "papelaria",
+        "text": "Produto de bom custo beneficio."
+      },
+      {
+        "ref": "R7",
+        "review_id": "9fee00eb54fcab4e3ccfecc513e5735e",
+        "score": 5,
+        "category": "sinalizacao_e_seguranca",
+        "text": "Excelente custo beneficio"
+      },
+      {
+        "ref": "R8",
+        "review_id": "17d28a46b4a5fcdab978fb6e0a290294",
+        "score": 5,
+        "category": "relogios_presentes",
+        "text": "muito bom! Ótimo custo beneficio."
+      },
+      {
+        "ref": "R9",
+        "review_id": "8b5939810f5454fcbb50765827fd7130",
+        "score": 4,
+        "category": "eletroportateis",
+        "text": "Bom custo - beneficio."
+      },
+      {
+        "ref": "R10",
+        "review_id": "edd265dc0820329a00da36b828d5b56a",
+        "score": 5,
+        "category": "cool_stuff",
+        "text": "Excelente custo beneficio, muito bonitinho"
+      }
+    ]
+  },
+  {
+    "id": "adversaria-4",
+    "question": "O que os clientes acham do serviço de streaming de filmes da loja?",
+    "expect": "refuse",
+    "status": "no_evidence",
+    "model": "",
+    "seconds": 0.2,
+    "filters": [],
+    "answer": "Não encontrei avaliações suficientes na base para responder a essa pergunta com segurança.\n\nMotivo: 1 avaliação(ões) ficaram dentro do limiar de relevância (mínimo exigido: 3); a mais próxima tem distância 0.39 e o limiar é 0.40.\n\nA pergunta pode estar fora do escopo das avaliações de clientes da Olist.",
+    "error": "",
+    "cited": [],
+    "evidences": [
+      {
+        "ref": "R1",
+        "review_id": "3e5a72e76d4966132a74fa288f65e2db",
+        "score": 4,
+        "category": "automotivo",
+        "text": "Show de loja"
+      }
+    ]
+  }
+]

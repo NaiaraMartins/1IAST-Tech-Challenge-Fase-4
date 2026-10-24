@@ -1,103 +1,146 @@
+"""Builds the knowledge base: one document per customer review with written text.
+
+Decisions (justified in the README, section "Preparação da base"):
+- Only reviews with a title or a comment are kept: a score without text carries
+  no qualitative evidence for the RAG.
+- Title and comment are combined into ``review_text``, the only field that is
+  embedded. Category, score, dates and delivery data become metadata, so they
+  can filter the search without distorting semantic similarity.
+- Orders with items from several categories keep the category of the most
+  expensive item (the main purchase of the order).
+- Duplicated ``review_id`` (the same review attached to more than one order in
+  the source) keeps the first occurrence.
+- One-word comments ("Ótima", "Péssima", "ok") are kept for counting but
+  flagged as ``is_short`` so they never become evidence for the LLM: they match
+  almost any short query and carry no explanation of what happened.
+"""
+
 import os
+import re
+
 import pandas as pd
 
+from src.config import MIN_EVIDENCE_WORDS, PROCESSED_DIR, RAW_DIR, REVIEWS_CSV
 
-def carregar_e_limpar_dados():
-  raiz_projeto = os.path.abspath(
-      os.path.join(os.path.dirname(__file__), "..")
+WHITESPACE = re.compile(r"\s+")
+
+
+def normalize_text(value) -> str:
+  if pd.isna(value):
+    return ""
+  return WHITESPACE.sub(" ", str(value)).strip()
+
+
+def combine_title_and_comment(title: str, comment: str) -> str:
+  if title and comment:
+    separator = " " if title.endswith((".", "!", "?")) else ". "
+    return f"{title}{separator}{comment}"
+  return title or comment
+
+
+def load_raw():
+  read = lambda name: pd.read_csv(os.path.join(RAW_DIR, name))
+  return (
+      read("olist_order_reviews_dataset.csv"),
+      read("olist_orders_dataset.csv"),
+      read("olist_order_items_dataset.csv"),
+      read("olist_products_dataset.csv"),
   )
-  caminho_raw = os.path.join(raiz_projeto, "data", "raw")
-  caminho_processed = os.path.join(raiz_projeto, "data", "processed")
 
-  print(f"Caminho absoluto RAW: {caminho_raw}")
-  print(f"Caminho absoluto PROCESSED: {caminho_processed}")
 
-  print("A carregar os 4 datasets da Olist...")
-
-  try:
-    reviews = pd.read_csv(
-        os.path.join(caminho_raw, "olist_order_reviews_dataset.csv")
-    )
-    orders = pd.read_csv(os.path.join(caminho_raw, "olist_orders_dataset.csv"))
-    order_items = pd.read_csv(
-        os.path.join(caminho_raw, "olist_order_items_dataset.csv")
-    )
-    products = pd.read_csv(
-        os.path.join(caminho_raw, "olist_products_dataset.csv")
-    )
-  except FileNotFoundError as e:
-    print(f"Erro ao encontrar os ficheiros em data/raw/: {e}")
-    return None
-
-  print("A limpar e a tratar valores ausentes...")
-  reviews_com_texto = reviews.dropna(subset=["review_comment_message"]).copy()
-  reviews_com_texto["review_comment_message"] = (
-      reviews_com_texto["review_comment_message"]
-      .astype(str)
-      .str.replace("\n", " ")
-      .str.replace("\r", " ")
-      .str.strip()
+def main_category_per_order(order_items: pd.DataFrame, products: pd.DataFrame) -> pd.DataFrame:
+  items = order_items.merge(
+      products[["product_id", "product_category_name"]], on="product_id", how="left"
   )
-  reviews_com_texto = reviews_com_texto[
-      reviews_com_texto["review_comment_message"] != ""
+  items = items.sort_values(["order_id", "price"], ascending=[True, False])
+  main = items.drop_duplicates("order_id")[["order_id", "product_category_name", "price"]]
+  categories_per_order = items.groupby("order_id")["product_category_name"].nunique()
+  main["has_multiple_categories"] = main["order_id"].map(categories_per_order).gt(1)
+  return main.rename(columns={"price": "main_item_price"})
+
+
+def build_knowledge_base() -> pd.DataFrame:
+  reviews, orders, order_items, products = load_raw()
+  print(f"Avaliações no dataset: {len(reviews)}")
+
+  reviews["review_comment_title"] = reviews["review_comment_title"].map(normalize_text)
+  reviews["review_comment_message"] = reviews["review_comment_message"].map(normalize_text)
+  reviews["review_text"] = [
+      combine_title_and_comment(t, c)
+      for t, c in zip(reviews["review_comment_title"], reviews["review_comment_message"])
   ]
+  reviews = reviews[reviews["review_text"] != ""]
+  print(f"Com título ou comentário: {len(reviews)}")
 
-  print("A cruzar dados (Reviews -> Orders -> Items -> Products)...")
+  reviews = reviews.drop_duplicates("review_id")
+  print(f"Após remover review_id duplicado: {len(reviews)}")
 
-  # Cruzamentos sucessivos para ligar o review à categoria do produto
-  df_aux = reviews_com_texto.merge(
-      orders[["order_id", "order_purchase_timestamp"]],
+  orders = orders.copy()
+  for column in (
+      "order_purchase_timestamp",
+      "order_delivered_customer_date",
+      "order_estimated_delivery_date",
+  ):
+    orders[column] = pd.to_datetime(orders[column], errors="coerce")
+
+  df = reviews.merge(
+      orders[[
+          "order_id",
+          "order_status",
+          "order_purchase_timestamp",
+          "order_delivered_customer_date",
+          "order_estimated_delivery_date",
+      ]],
       on="order_id",
       how="inner",
   )
-  df_aux = df_aux.merge(
-      order_items[["order_id", "product_id"]], on="order_id", how="inner"
-  )
-  df_enriquecido = df_aux.merge(
-      products[["product_id", "product_category_name"]],
-      on="product_id",
-      how="left",
-  )
+  df = df.merge(main_category_per_order(order_items, products), on="order_id", how="left")
+  print(f"Após cruzar com pedidos: {len(df)}")
 
-  df_enriquecido["product_category_name"] = df_enriquecido[
-      "product_category_name"
-  ].fillna("desconhecido")
-  df_enriquecido = df_enriquecido.drop_duplicates(subset=["review_id"])
+  df["product_category_name"] = df["product_category_name"].fillna("desconhecido")
+  df["has_multiple_categories"] = df["has_multiple_categories"].fillna(False).astype(bool)
 
-  print(f"Total de registos após cruzamento completo: {len(df_enriquecido)}")
+  delivered = df["order_delivered_customer_date"]
+  estimated = df["order_estimated_delivery_date"]
+  df["delivery_delay_days"] = (delivered - estimated).dt.days
+  df["delivery_status"] = "nao_entregue"
+  df.loc[delivered.notna() & df["delivery_delay_days"].le(0), "delivery_status"] = "no_prazo"
+  df.loc[delivered.notna() & df["delivery_delay_days"].gt(0), "delivery_status"] = "atrasado"
 
-  print("A formatar os documentos estruturados para o RAG...")
+  df["purchase_year"] = df["order_purchase_timestamp"].dt.year.astype("Int64")
+  df["purchase_month"] = df["order_purchase_timestamp"].dt.strftime("%Y-%m")
+  df["is_short"] = df["review_text"].str.split().str.len().lt(MIN_EVIDENCE_WORDS)
 
-  def construir_documento_texto(row):
-    return (
-        f"[Metadados] Categoria do Produto: {row['product_category_name']} | "
-        f"Nota da Avaliação: {row['review_score']}/5 | "
-        f"Data da Compra: {row['order_purchase_timestamp']}\n"
-        f"[Comentário do Cliente]: {row['review_comment_message']}"
-    )
-
-  df_enriquecido["document_text"] = df_enriquecido.apply(
-      construir_documento_texto, axis=1
-  )
-
-  df_final = df_enriquecido[[
+  columns = [
       "review_id",
       "order_id",
-      "product_id",
-      "product_category_name",
       "review_score",
-      "order_purchase_timestamp",
+      "review_comment_title",
       "review_comment_message",
-      "document_text",
-  ]]
+      "review_text",
+      "is_short",
+      "product_category_name",
+      "has_multiple_categories",
+      "main_item_price",
+      "order_status",
+      "order_purchase_timestamp",
+      "purchase_year",
+      "purchase_month",
+      "delivery_status",
+      "delivery_delay_days",
+  ]
+  df = df[columns].sort_values(["order_purchase_timestamp", "review_id"]).reset_index(drop=True)
 
-  os.makedirs(caminho_processed, exist_ok=True)
-  caminho_arquivo_saida = os.path.join(caminho_processed, "reviews_clean.csv")
-  df_final.to_csv(caminho_arquivo_saida, index=False, encoding="utf-8")
+  os.makedirs(PROCESSED_DIR, exist_ok=True)
+  df.to_csv(REVIEWS_CSV, index=False, encoding="utf-8")
 
-  print(f"Ficheiro guardado com sucesso em: {caminho_arquivo_saida}")
-  return df_final
+  print(f"Documentos na base de conhecimento: {len(df)}")
+  print(f"Comentários de uma palavra (não viram evidência): {int(df['is_short'].sum())}")
+  print(f"Pedidos com mais de uma categoria: {int(df['has_multiple_categories'].sum())}")
+  print(f"Status de entrega: {df['delivery_status'].value_counts().to_dict()}")
+  print(f"Arquivo salvo em: {REVIEWS_CSV}")
+  return df
 
 
 if __name__ == "__main__":
-  carregar_e_limpar_dados()
+  build_knowledge_base()

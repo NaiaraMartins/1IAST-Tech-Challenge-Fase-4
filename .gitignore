@@ -14,8 +14,14 @@ env/
 
 # Local runtime files
 *.log
-.streamlit/
+.streamlit/secrets.toml
 
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# Vector store is rebuilt from data/index/embeddings.npy (see src/vector_store.py)
+data/chroma_db/
+
+# Secrets
+.env

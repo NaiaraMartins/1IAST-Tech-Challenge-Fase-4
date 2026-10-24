@@ -1,0 +1,759 @@
+[
+  {
+    "id": "enunciado-1",
+    "group": "Exemplos do enunciado (pág. 8)",
+    "question": "Quais são os principais problemas relatados pelos clientes em suas avaliações?",
+    "expect": "answer",
+    "status": "retrieval_only",
+    "filters": [
+      "nota ≤ 2"
+    ],
+    "semantic_query": "problemas",
+    "evidences": 10,
+    "precision_at_5": 1.0,
+    "mean_distance_top5": 0.393,
+    "top_evidences": [
+      {
+        "review_id": "b6d959c77439cee3748285df1e17ec26",
+        "score": 2,
+        "distance": 0.339,
+        "text": "Veio com defeitos"
+      },
+      {
+        "review_id": "49e3a388c41aec2711c27fe722b77154",
+        "score": 1,
+        "distance": 0.458,
+        "text": "Há uma grande dificuldade em contactar o fornecedor para resolver qualquer problema."
+      },
+      {
+        "review_id": "99768f8b67c6ffe1b0bf71d80df6c7f2",
+        "score": 1,
+        "distance": 0.41,
+        "text": "Preciso resolver meu problema"
+      },
+      {
+        "review_id": "452cfaa876b9d0d505ae6ba3f0a217b1",
+        "score": 1,
+        "distance": 0.382,
+        "text": "TERRIVEL ESTE PROBLEMA DA ENTREGA"
+      },
+      {
+        "review_id": "8c6d55fb54f18ddd012b1fefecfc7292",
+        "score": 1,
+        "distance": 0.376,
+        "text": "Péssimo atendimento"
+      }
+    ]
+  },
+  {
+    "id": "enunciado-2",
+    "group": "Exemplos do enunciado (pág. 8)",
+    "question": "O que os clientes relatam sobre problemas relacionados à entrega?",
+    "expect": "answer",
+    "status": "retrieval_only",
+    "filters": [
+      "nota ≤ 2"
+    ],
+    "semantic_query": "problemas entrega",
+    "evidences": 10,
+    "precision_at_5": 1.0,
+    "mean_distance_top5": 0.243,
+    "top_evidences": [
+      {
+        "review_id": "a1074ef6728469383f2a8bf58fd98e51",
+        "score": 1,
+        "distance": 0.178,
+        "text": "Atraso na entrega"
+      },
+      {
+        "review_id": "249f0e6fef00a6e6dd15aeaad6c0afcc",
+        "score": 1,
+        "distance": 0.239,
+        "text": "erro na entrega. a entrega nao chegou correta completa"
+      },
+      {
+        "review_id": "452cfaa876b9d0d505ae6ba3f0a217b1",
+        "score": 1,
+        "distance": 0.247,
+        "text": "TERRIVEL ESTE PROBLEMA DA ENTREGA"
+      },
+      {
+        "review_id": "256e445ddba830565ad576854f406761",
+        "score": 1,
+        "distance": 0.239,
+        "text": "sem comentarios, muito confusa a informação sobre entrega"
+      },
+      {
+        "review_id": "42a3a3e2b79465364e24f6f4c642bc23",
+        "score": 1,
+        "distance": 0.313,
+        "text": "Em partes. Sou cliente há anos, porém sempre há divergências e problemas na entrega, consta como produto entregue, porém foi entregue apenas 1 produto, aguardo solução!"
+      }
+    ]
+  },
+  {
+    "id": "enunciado-3",
+    "group": "Exemplos do enunciado (pág. 8)",
+    "question": "Quais aspectos da experiência de compra são mais elogiados pelos clientes?",
+    "expect": "answer",
+    "status": "retrieval_only",
+    "filters": [
+      "nota ≥ 4"
+    ],
+    "semantic_query": "compra elogiados",
+    "evidences": 10,
+    "precision_at_5": 0.8,
+    "mean_distance_top5": 0.181,
+    "top_evidences": [
+      {
+        "review_id": "8fe624d31a665d8852770c63a354fa61",
+        "score": 5,
+        "distance": 0.164,
+        "text": "satisfeita com a compra"
+      },
+      {
+        "review_id": "e2b4d5970fefa486994421aba7976be9",
+        "score": 5,
+        "distance": 0.169,
+        "text": "Ótimo vendedor! Produto de qualidade, excelência no processo de compra."
+      },
+      {
+        "review_id": "52300a5e6997431d0597e820015ec8ff",
+        "score": 5,
+        "distance": 0.165,
+        "text": "excelente experiência de compra. Obrigado"
+      },
+      {
+        "review_id": "71b0927337e42e19d498bdd598e46029",
+        "score": 5,
+        "distance": 0.198,
+        "text": "Entrega. Foi Poditiva a experiência de compra."
+      },
+      {
+        "review_id": "d616c8b2fc1e9b6e150b77e78967a4ea",
+        "score": 5,
+        "distance": 0.211,
+        "text": "A experiência da compra foi muito satisfatória."
+      }
+    ]
+  },
+  {
+    "id": "enunciado-4",
+    "group": "Exemplos do enunciado (pág. 8)",
+    "question": "Quais padrões podem ser identificados nas avaliações de clientes insatisfeitos?",
+    "expect": "answer",
+    "status": "retrieval_only",
+    "filters": [
+      "nota ≤ 2"
+    ],
+    "semantic_query": "insatisfeitos",
+    "evidences": 10,
+    "precision_at_5": 1.0,
+    "mean_distance_top5": 0.29,
+    "top_evidences": [
+      {
+        "review_id": "db90ab0ea5d97cbfa75cb66ea71013cc",
+        "score": 1,
+        "distance": 0.22,
+        "text": "Insatisfação. Negativo"
+      },
+      {
+        "review_id": "190b01af91fb754443307e59209136d6",
+        "score": 1,
+        "distance": 0.357,
+        "text": "produto insatisfatorio. demora na entrega e produto de baixa qualidade"
+      },
+      {
+        "review_id": "48dfb09da10ec86135fedeb9941364c2",
+        "score": 2,
+        "distance": 0.295,
+        "text": "Ruim. Falta de respeito com cliente"
+      },
+      {
+        "review_id": "b6d959c77439cee3748285df1e17ec26",
+        "score": 2,
+        "distance": 0.297,
+        "text": "Veio com defeitos"
+      },
+      {
+        "review_id": "1e0311ba228361042d8e0e1d0cd411fb",
+        "score": 1,
+        "distance": 0.282,
+        "text": "Produto com defeito. Produto com defeito desejo a troca"
+      }
+    ]
+  },
+  {
+    "id": "enunciado-5",
+    "group": "Exemplos do enunciado (pág. 8)",
+    "question": "Quais avaliações sustentam a conclusão de que existem problemas recorrentes relacionados ao prazo de entrega?",
+    "expect": "answer",
+    "status": "retrieval_only",
+    "filters": [
+      "nota ≤ 2"
+    ],
+    "semantic_query": "problemas ao prazo entrega",
+    "evidences": 10,
+    "precision_at_5": 1.0,
+    "mean_distance_top5": 0.197,
+    "top_evidences": [
+      {
+        "review_id": "3ffed17f5010b9c6d33706b790732482",
+        "score": 1,
+        "distance": 0.161,
+        "text": "Muita demora na entrega"
+      },
+      {
+        "review_id": "fc13bf6f397d017a5442582be58498e8",
+        "score": 1,
+        "distance": 0.201,
+        "text": "falta de comprometimento com o prazo"
+      },
+      {
+        "review_id": "30e18ccf837093149a4f17dc1360a1ce",
+        "score": 1,
+        "distance": 0.205,
+        "text": "Não respeitou o prazo da entrega"
+      },
+      {
+        "review_id": "a1e9b5056896b01638a5aa8e02673955",
+        "score": 1,
+        "distance": 0.178,
+        "text": "demora na entrega (ainda nao chegou fora do prazo)"
+      },
+      {
+        "review_id": "045d330f147f09c3bd2426266ec5d414",
+        "score": 1,
+        "distance": 0.24,
+        "text": "Nao tem boa avaliação por atraso na entrega"
+      }
+    ]
+  },
+  {
+    "id": "negocio-1",
+    "group": "Problema de negócio (pág. 5)",
+    "question": "Quais reclamações relacionadas à entrega aparecem com maior frequência?",
+    "expect": "answer",
+    "status": "retrieval_only",
+    "filters": [
+      "nota ≤ 2"
+    ],
+    "semantic_query": "reclamacoes entrega",
+    "evidences": 10,
+    "precision_at_5": 1.0,
+    "mean_distance_top5": 0.186,
+    "top_evidences": [
+      {
+        "review_id": "a1074ef6728469383f2a8bf58fd98e51",
+        "score": 1,
+        "distance": 0.13,
+        "text": "Atraso na entrega"
+      },
+      {
+        "review_id": "256e445ddba830565ad576854f406761",
+        "score": 1,
+        "distance": 0.222,
+        "text": "sem comentarios, muito confusa a informação sobre entrega"
+      },
+      {
+        "review_id": "97b1c66cd7fc0a9e984d1435de5189be",
+        "score": 1,
+        "distance": 0.138,
+        "text": "Demora na entrega"
+      },
+      {
+        "review_id": "ef3905df6593f5fa7faebc82fb85e2e6",
+        "score": 1,
+        "distance": 0.144,
+        "text": "Demora a entrega"
+      },
+      {
+        "review_id": "949eca021ed60d00a2d2bda3cc686d4d",
+        "score": 1,
+        "distance": 0.296,
+        "text": "muitos desencontros nas entregas de produtos"
+      }
+    ]
+  },
+  {
+    "id": "negocio-2",
+    "group": "Problema de negócio (pág. 5)",
+    "question": "Existem padrões recorrentes nas avaliações relacionadas à qualidade dos produtos?",
+    "expect": "answer",
+    "status": "retrieval_only",
+    "filters": [],
+    "semantic_query": "qualidade produtos",
+    "evidences": 10,
+    "precision_at_5": 1.0,
+    "mean_distance_top5": 0.151,
+    "top_evidences": [
+      {
+        "review_id": "15c72b68259c35ea984ed16bf7633730",
+        "score": 4,
+        "distance": 0.121,
+        "text": "produto de qualidade"
+      },
+      {
+        "review_id": "0cd25123ee693761394d2487b0fa3cc4",
+        "score": 5,
+        "distance": 0.15,
+        "text": "Pontualidade e qualidade do produto."
+      },
+      {
+        "review_id": "69c6002c32816bf3303198f82a69791d",
+        "score": 3,
+        "distance": 0.16,
+        "text": "má qualidade do produto"
+      },
+      {
+        "review_id": "e5ffa47e3f2e6fd7842666ed9f857342",
+        "score": 5,
+        "distance": 0.145,
+        "text": "Produto de qualidade e dentro do prazo"
+      },
+      {
+        "review_id": "541b0f1c04cf05d526b766f0d7a799f0",
+        "score": 5,
+        "distance": 0.177,
+        "text": "Agora e usar o produto para avaliar a qualidade."
+      }
+    ]
+  },
+  {
+    "id": "negocio-3",
+    "group": "Problema de negócio (pág. 5)",
+    "question": "O que os clientes falam sobre o atendimento do vendedor?",
+    "expect": "answer",
+    "status": "retrieval_only",
+    "filters": [],
+    "semantic_query": "atendimento vendedor",
+    "evidences": 10,
+    "precision_at_5": 1.0,
+    "mean_distance_top5": 0.16,
+    "top_evidences": [
+      {
+        "review_id": "6ec93e77f444e0b1703740a69122e35d",
+        "score": 5,
+        "distance": 0.116,
+        "text": "Vendedor compromisso do vou o cliente"
+      },
+      {
+        "review_id": "f6362b9da08c0cb3093dd517f5217e39",
+        "score": 5,
+        "distance": 0.142,
+        "text": "Avaliação do vendedor"
+      },
+      {
+        "review_id": "0afacfbf7227b075c599d63c9c0c2c0a",
+        "score": 5,
+        "distance": 0.192,
+        "text": "Empresa comprometida com o atendimento ao cliente e idônea nos produtos que vendem"
+      },
+      {
+        "review_id": "d3d96cfe12e088db4eb4e94086a71cb3",
+        "score": 5,
+        "distance": 0.127,
+        "text": "Vendedores otimos"
+      },
+      {
+        "review_id": "faf9562f00cc9e7c091b667170e215fb",
+        "score": 2,
+        "distance": 0.224,
+        "text": "Difícil diálogo com vendedor"
+      }
+    ]
+  },
+  {
+    "id": "negocio-4",
+    "group": "Problema de negócio (pág. 5)",
+    "question": "Os clientes reclamam de receber produto diferente do anunciado?",
+    "expect": "answer",
+    "status": "retrieval_only",
+    "filters": [
+      "nota ≤ 2"
+    ],
+    "semantic_query": "reclamam receber produto diferente anunciado",
+    "evidences": 10,
+    "precision_at_5": 1.0,
+    "mean_distance_top5": 0.244,
+    "top_evidences": [
+      {
+        "review_id": "4481b7d6375b34d2d6f82151f77c5526",
+        "score": 1,
+        "distance": 0.203,
+        "text": "Incorreto. O produto oferecido no anúncio é um, mas o que foi entregue se difere de forma que altera seu funcionamento."
+      },
+      {
+        "review_id": "3e0f1062f76a97d22d13c4156c69ef03",
+        "score": 1,
+        "distance": 0.278,
+        "text": "Gostaria de saber a quem e como reclamar para receber o produto correto. Grata."
+      },
+      {
+        "review_id": "b736ff4204044e49e39062584d06fa74",
+        "score": 1,
+        "distance": 0.266,
+        "text": "A loja anuncia um produto e entrega outro."
+      },
+      {
+        "review_id": "08528f70f579f0c830189efc523d2182",
+        "score": 1,
+        "distance": 0.256,
+        "text": "Produto errado. Entrega do produto diferente do solicitado Aguardo orientação para a troca"
+      },
+      {
+        "review_id": "31e60ea253684567293ba02673d47914",
+        "score": 1,
+        "distance": 0.217,
+        "text": "O produto não foi entregue conforme o anúncio. Foi entregue um produto diferente e de menor qualidade. Aguardando contato da loja para esclarecimentos do ocorrido e orientações para a troca."
+      }
+    ]
+  },
+  {
+    "id": "metadados-1",
+    "group": "Desafio adicional: metadados (pág. 9)",
+    "question": "Quais são os principais problemas relatados nas avaliações com nota baixa?",
+    "expect": "answer",
+    "status": "retrieval_only",
+    "filters": [
+      "nota ≤ 2"
+    ],
+    "semantic_query": "problemas",
+    "evidences": 10,
+    "precision_at_5": 0.8,
+    "mean_distance_top5": 0.362,
+    "top_evidences": [
+      {
+        "review_id": "b6d959c77439cee3748285df1e17ec26",
+        "score": 2,
+        "distance": 0.285,
+        "text": "Veio com defeitos"
+      },
+      {
+        "review_id": "96b1d5f199ee9c1da0a952ffe8902cec",
+        "score": 1,
+        "distance": 0.412,
+        "text": "a qualidade é baixa"
+      },
+      {
+        "review_id": "358f8960d56c93578361c94ad748da07",
+        "score": 1,
+        "distance": 0.325,
+        "text": "Péssima entrega"
+      },
+      {
+        "review_id": "99768f8b67c6ffe1b0bf71d80df6c7f2",
+        "score": 1,
+        "distance": 0.431,
+        "text": "Preciso resolver meu problema"
+      },
+      {
+        "review_id": "fa6802dda2cd5015410612ad9725dfbf",
+        "score": 1,
+        "distance": 0.358,
+        "text": "Falta de compromisso"
+      }
+    ]
+  },
+  {
+    "id": "metadados-2",
+    "group": "Desafio adicional: metadados (pág. 9)",
+    "question": "O que os clientes mais elogiam em beleza e saúde?",
+    "expect": "answer",
+    "status": "retrieval_only",
+    "filters": [
+      "nota ≥ 4",
+      "categoria = beleza_saude"
+    ],
+    "semantic_query": "elogiam",
+    "evidences": 10,
+    "precision_at_5": 1.0,
+    "mean_distance_top5": 0.279,
+    "top_evidences": [
+      {
+        "review_id": "46eb7aeb025c80f0949fcb5a24850c3b",
+        "score": 4,
+        "distance": 0.247,
+        "text": "super recomendo"
+      },
+      {
+        "review_id": "e4e29ac413a8dfa4bfdf4b506463b5ae",
+        "score": 5,
+        "distance": 0.284,
+        "text": "Estão de parabéns"
+      },
+      {
+        "review_id": "80505dc08061cad6bd3157c4a976d8c9",
+        "score": 5,
+        "distance": 0.286,
+        "text": "recomendado. Muito bem atendido"
+      },
+      {
+        "review_id": "dd7ad46e529dee82ac30a6f2561e0aa3",
+        "score": 5,
+        "distance": 0.308,
+        "text": "recomendo. Ótima loja e produtos"
+      },
+      {
+        "review_id": "0577fe8031353bcea3ae73fbc80034b5",
+        "score": 5,
+        "distance": 0.272,
+        "text": "excelente, recomendo pra todos"
+      }
+    ]
+  },
+  {
+    "id": "metadados-3",
+    "group": "Desafio adicional: metadados (pág. 9)",
+    "question": "Quais temas aparecem nas avaliações relacionadas a experiências de entrega insatisfatórias?",
+    "expect": "answer",
+    "status": "retrieval_only",
+    "filters": [
+      "nota ≤ 2",
+      "entrega atrasada ou não entregue"
+    ],
+    "semantic_query": "entrega insatisfatorias",
+    "evidences": 10,
+    "precision_at_5": 0.8,
+    "mean_distance_top5": 0.291,
+    "top_evidences": [
+      {
+        "review_id": "5e728b72bbe8e793ad1c12e93a9fe9aa",
+        "score": 2,
+        "distance": 0.252,
+        "text": "péssima entrega"
+      },
+      {
+        "review_id": "190b01af91fb754443307e59209136d6",
+        "score": 1,
+        "distance": 0.267,
+        "text": "produto insatisfatorio. demora na entrega e produto de baixa qualidade"
+      },
+      {
+        "review_id": "256e445ddba830565ad576854f406761",
+        "score": 1,
+        "distance": 0.306,
+        "text": "sem comentarios, muito confusa a informação sobre entrega"
+      },
+      {
+        "review_id": "db398c0ddf7b63f9ec7e07a246940d4b",
+        "score": 1,
+        "distance": 0.26,
+        "text": "Não Recomendado. Prazo de entrega não cumprido."
+      },
+      {
+        "review_id": "0d592da0b11f266efd97a16956ff6417",
+        "score": 1,
+        "distance": 0.371,
+        "text": "compra efetuada,debito autorizado ,pedido cancelado sem explicações.Extrema falta de respeito e consideração com os clientes."
+      }
+    ]
+  },
+  {
+    "id": "metadados-4",
+    "group": "Desafio adicional: metadados (pág. 9)",
+    "question": "Quais as reclamações sobre cama, mesa e banho em 2018?",
+    "expect": "answer",
+    "status": "retrieval_only",
+    "filters": [
+      "nota ≤ 2",
+      "categoria = cama_mesa_banho",
+      "ano da compra = 2018"
+    ],
+    "semantic_query": "reclamacoes",
+    "evidences": 10,
+    "precision_at_5": 0.6,
+    "mean_distance_top5": 0.525,
+    "top_evidences": [
+      {
+        "review_id": "e8a7de56575f45bfff67b585209c037f",
+        "score": 1,
+        "distance": 0.452,
+        "text": "Prazo de entrega"
+      },
+      {
+        "review_id": "7e3a34981cab2ef0c9d634b58c69eb31",
+        "score": 2,
+        "distance": 0.521,
+        "text": "As toalhas muito ruins , finas"
+      },
+      {
+        "review_id": "42640ef0057b47f4bafd780b8be55f83",
+        "score": 1,
+        "distance": 0.544,
+        "text": "Avaliação prejudicada. Produto ainda não foi entregue !!!"
+      },
+      {
+        "review_id": "77bb1cf61b23d884784c7b481fb06183",
+        "score": 1,
+        "distance": 0.533,
+        "text": "RECOMENDO. SOMENTE 1 PRODUTO MEU CHEGOU GOSTARIA DE SABER DO OUTRO"
+      },
+      {
+        "review_id": "5193565d8ef972341e963399fedec040",
+        "score": 1,
+        "distance": 0.574,
+        "text": "Entrega atrasada"
+      }
+    ]
+  },
+  {
+    "id": "fora-1",
+    "group": "Fora do escopo",
+    "question": "Qual a capital da França?",
+    "expect": "refuse",
+    "status": "out_of_scope",
+    "filters": [],
+    "semantic_query": "capital franca",
+    "evidences": 0,
+    "precision_at_5": null,
+    "mean_distance_top5": null,
+    "top_evidences": []
+  },
+  {
+    "id": "fora-2",
+    "group": "Fora do escopo",
+    "question": "Qual a previsão do tempo para amanhã em São Paulo?",
+    "expect": "refuse",
+    "status": "out_of_scope",
+    "filters": [],
+    "semantic_query": "previsao tempo amanha paulo",
+    "evidences": 0,
+    "precision_at_5": null,
+    "mean_distance_top5": null,
+    "top_evidences": []
+  },
+  {
+    "id": "fora-3",
+    "group": "Fora do escopo",
+    "question": "Quem ganhou a Copa do Mundo de 2002?",
+    "expect": "refuse",
+    "status": "out_of_scope",
+    "filters": [],
+    "semantic_query": "quem ganhou copa mundo 2002",
+    "evidences": 0,
+    "precision_at_5": null,
+    "mean_distance_top5": null,
+    "top_evidences": []
+  },
+  {
+    "id": "fora-4",
+    "group": "Fora do escopo",
+    "question": "Como funciona a fotossíntese?",
+    "expect": "refuse",
+    "status": "out_of_scope",
+    "filters": [],
+    "semantic_query": "como funciona fotossintese",
+    "evidences": 0,
+    "precision_at_5": null,
+    "mean_distance_top5": null,
+    "top_evidences": []
+  },
+  {
+    "id": "fora-5",
+    "group": "Fora do escopo",
+    "question": "Escreva um poema sobre o mar",
+    "expect": "refuse",
+    "status": "out_of_scope",
+    "filters": [],
+    "semantic_query": "escreva poema mar",
+    "evidences": 0,
+    "precision_at_5": null,
+    "mean_distance_top5": null,
+    "top_evidences": []
+  },
+  {
+    "id": "adversaria-1",
+    "group": "Fora do escopo com termo do domínio",
+    "question": "Qual o preço do bitcoin hoje?",
+    "expect": "refuse",
+    "status": "no_evidence",
+    "filters": [],
+    "semantic_query": "preco bitcoin hoje",
+    "evidences": 0,
+    "precision_at_5": null,
+    "mean_distance_top5": null,
+    "top_evidences": []
+  },
+  {
+    "id": "adversaria-2",
+    "group": "Fora do escopo com termo do domínio",
+    "question": "Como trocar o óleo do carro?",
+    "expect": "refuse",
+    "status": "no_evidence",
+    "filters": [
+      "categoria = automotivo"
+    ],
+    "semantic_query": "como trocar oleo",
+    "evidences": 0,
+    "precision_at_5": null,
+    "mean_distance_top5": null,
+    "top_evidences": []
+  },
+  {
+    "id": "adversaria-3",
+    "group": "Fora do escopo com termo do domínio",
+    "question": "Qual foi o lucro líquido da Olist em 2018?",
+    "expect": "refuse",
+    "status": "retrieval_only",
+    "filters": [
+      "ano da compra = 2018"
+    ],
+    "semantic_query": "lucro liquido olist",
+    "evidences": 10,
+    "precision_at_5": null,
+    "mean_distance_top5": 0.367,
+    "top_evidences": [
+      {
+        "review_id": "6e385535a7e36edaecea6ba8dee14b65",
+        "score": 4,
+        "distance": 0.355,
+        "text": "vale o custo benefício"
+      },
+      {
+        "review_id": "57a380cbbadd42729deb1aa0d5272c60",
+        "score": 4,
+        "distance": 0.356,
+        "text": "Produto dentro dom esperado."
+      },
+      {
+        "review_id": "1c5126988da5a57e2c3f324d44ef0b82",
+        "score": 5,
+        "distance": 0.376,
+        "text": "Produto Ok. Produto entregue conforme anunciado. Bom custo beneficio!Recomendo!"
+      },
+      {
+        "review_id": "1939d0b7a33c09fbd259765149b4c873",
+        "score": 4,
+        "distance": 0.39,
+        "text": "Produto recebido"
+      },
+      {
+        "review_id": "e986d799c9e32a490dff4adc50f9fb5a",
+        "score": 5,
+        "distance": 0.36,
+        "text": "Perfeito. Produto corresponde ao anunciado. Ótimo custo beneficio."
+      }
+    ]
+  },
+  {
+    "id": "adversaria-4",
+    "group": "Fora do escopo com termo do domínio",
+    "question": "O que os clientes acham do serviço de streaming de filmes da loja?",
+    "expect": "refuse",
+    "status": "no_evidence",
+    "filters": [],
+    "semantic_query": "servico streaming filmes loja",
+    "evidences": 1,
+    "precision_at_5": null,
+    "mean_distance_top5": 0.392,
+    "top_evidences": [
+      {
+        "review_id": "3e5a72e76d4966132a74fa288f65e2db",
+        "score": 4,
+        "distance": 0.392,
+        "text": "Show de loja"
+      }
+    ]
+  }
+]
